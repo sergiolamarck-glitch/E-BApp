@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema Integrado de Engenharia (CQ, HVAC, Bandejas)</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              DEFAULT: '#002838', // Cor Principal Escura
+              darker: '#00161f',  // Fundo muito escuro
+              light: '#003e57',   // Bordas e destaques no dark
+              accent: '#005a7d',  // Elementos ativos
+              subtle: '#e6eaed'   // Fundo de destaque no light mode
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    @media print {
+      body { background: #ffffff !important; color: #000000 !important; }
+      .no-print { display: none !important; }
+      .print-border { border: 1px solid #e4e4e7 !important; }
+      .print-text-black { color: #000000 !important; }
+      .print-break-inside-avoid { break-inside: avoid; }
+      main { padding: 0 !important; }
+    }
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .dark ::-webkit-scrollbar-thumb { background: #003e57; border-radius: 4px; }
+    .dark ::-webkit-scrollbar-thumb:hover { background: #005a7d; }
+    ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+  </style>
+</head>
+<body class="antialiased transition-colors duration-300 bg-slate-50 text-zinc-900 dark:bg-brand-darker dark:text-zinc-100 min-h-screen flex flex-col">
+
+  <header class="no-print bg-white dark:bg-brand border-b border-zinc-200 dark:border-brand-light sticky top-0 z-40 shadow-sm transition-colors">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-brand dark:bg-white flex items-center justify-center text-white dark:text-brand font-black text-xl shadow-md border border-brand-light dark:border-transparent">Ω</div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 id="header-title" class="text-base font-black tracking-tight text-brand dark:text-white">Engenharia & Qualidade</h1>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-900">▲ REV 2.0</span>
+          </div>
+          <p id="header-subtitle" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-brand-light">Painel Integrado: CQ, HVAC, Piping e Bandejas</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <div class="hidden lg:flex bg-slate-100 dark:bg-brand-darker p-1 rounded-lg border border-zinc-200 dark:border-brand-light">
+          <button id="tab-cq-btn" onclick="switchTab('cq')" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span id="tab-cq-label">Checklist de Qualidade</span>
+          </button>
+          <button id="tab-hvac-btn" onclick="switchTab('hvac')" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>
+            <span id="tab-hvac-label">Aterramento HVAC</span>
+          </button>
+          <button id="tab-bandejas-btn" onclick="switchTab('bandejas')" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 17 22 12"/></svg>
+            <span id="tab-bandejas-label">Bandejas & Leitos</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-1.5 px-2 py-1.5 rounded-lg border border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-zinc-400"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          <select id="lang-select" onchange="changeLanguage(this.value)" class="bg-transparent border-none text-xs font-bold text-zinc-700 dark:text-zinc-200 outline-none cursor-pointer">
+            <option value="pt" class="dark:bg-brand">PT-BR</option>
+            <option value="en" class="dark:bg-brand">EN</option>
+            <option value="es" class="dark:bg-brand">ES</option>
+            <option value="hi" class="dark:bg-brand">HI</option>
+          </select>
+        </div>
+        
+        <button id="theme-toggle-btn" onclick="toggleDarkMode()" class="p-2 rounded-lg border border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker text-zinc-500 hover:bg-zinc-200 dark:hover:bg-brand transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="lg:hidden no-print bg-white dark:bg-brand border-b border-zinc-200 dark:border-brand-light p-2 flex justify-center gap-2 overflow-x-auto">
+    <button id="tab-cq-btn-mob" onclick="switchTab('cq')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">Checklist</button>
+    <button id="tab-hvac-btn-mob" onclick="switchTab('hvac')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 font-bold">HVAC</button>
+    <button id="tab-bandejas-btn-mob" onclick="switchTab('bandejas')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">Trays</button>
+  </div>
+
+  <main id="main-container" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+  </main>
+
+  <footer class="no-print text-center py-4 text-[10px] font-bold text-zinc-400 dark:text-brand-light uppercase tracking-widest border-t border-zinc-200 dark:border-brand-darker mt-auto">
+    Engenharia de Detalhamento • Documentação Padrão Unificada © 2026
+  </footer>
+
+  <div id="modal-iso" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
+    <div class="relative w-full max-w-4xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
+        <h2 id="modal-iso-title" class="text-lg font-bold text-brand dark:text-white uppercase tracking-tight flex items-center gap-2"></h2>
+        <button onclick="closeModal('modal-iso')" class="p-2 rounded-lg transition-colors hover:bg-zinc-200 dark:hover:bg-brand-accent text-zinc-500 dark:text-zinc-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div id="modal-iso-body" class="p-6 overflow-y-auto text-sm space-y-6"></div>
+    </div>
+  </div>
+
+  <div id="modal-cortes" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
+    <div class="relative w-full max-w-5xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
+        <h2 id="modal-cortes-title" class="text-lg font-bold text-brand dark:text-white uppercase tracking-tight flex items-center gap-2"></h2>
+        <button onclick="closeModal('modal-cortes')" class="p-2 rounded-lg transition-colors hover:bg-zinc-200 dark:hover:bg-brand-accent text-zinc-500 dark:text-zinc-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div id="modal-cortes-body" class="p-6 overflow-y-auto text-sm space-y-6"></div>
+    </div>
+  </div>
+
+  <div id="modal-boxes" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
+    <div class="relative w-full max-w-4xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
+        <h2 id="modal-boxes-title" class="text-lg font-bold text-brand dark:text-white uppercase tracking-tight flex items-center gap-2"></h2>
+        <button onclick="closeModal('modal-boxes')" class="p-2 rounded-lg transition-colors hover:bg-zinc-200 dark:hover:bg-brand-accent text-zinc-500 dark:text-zinc-300">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        </button>
+      </div>
+      <div class="p-6 overflow-y-auto text-sm space-y-6">
+        <div class="overflow-x-auto w-full">
+           <table class="w-full text-left border-collapse border border-zinc-200 dark:border-brand-light text-xs font-bold text-zinc-700 dark:text-zinc-200">
+             <thead class="bg-slate-100 dark:bg-brand-darker uppercase tracking-wider text-[10px]">
+               <tr>
+                 <th class="p-3 border border-zinc-200 dark:border-brand-light">Earthing Box</th>
+                 <th class="p-3 border border-zinc-200 dark:border-brand-light text-center">Símbolo</th>
+                 <th class="p-3 border border-zinc-200 dark:border-brand-light text-center">Página</th>
+                 <th class="p-3 border border-zinc-200 dark:border-brand-light">Drawing Number</th>
+                 <th class="p-3 border border-zinc-200 dark:border-brand-light min-w-[200px]">Descrição</th>
+               </tr>
+             </thead>
+             <tbody id="earthing-boxes-tbody"></tbody>
+           </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const EARTHING_BOXES = [
+      { id: 'E45', page: '01', dwg: '3D-EB-E45-001', desc: 'Caixa de aterramento padrão para Earthingbar (Barramento de Distribuição de Terra)' },
+      { id: 'E15', page: '02', dwg: '3D-EB-E15-002', desc: 'Ponto de teste / medição direta para malha principal subterrânea' },
+      { id: 'E22²', page: '03', dwg: '3D-EB-E22-003', desc: 'Barramento de terra reforçado tipo 2 de seção estendida' },
+      { id: 'E23³', page: '04', dwg: '3D-EB-E23-004', desc: 'Barramento de terra triangular tipo 3 de alta capacidade' },
+      { id: 'E30', page: '05', dwg: '3D-EB-E30-005', desc: 'Barra de terra simples para ancoragem rápida em estruturas' },
+      { id: 'E31 ( 2 furos)', page: '06', dwg: '3D-EB-E31-006', desc: 'Barra compacta com furação dupla para duplo jumper' },
+      { id: 'E31 ( 4 furos)', page: '07', dwg: '3D-EB-E31-007', desc: 'Barra de terra múltipla de 4 conexões simultâneas' },
+      { id: 'E32', page: '08', dwg: '3D-EB-E32-008', desc: 'Caixa de junção de blindagem hermética IP65' },
+      { id: 'E38', page: '09', dwg: '3D-EB-E38-009', desc: 'Conexão cruzada tipo T de distribuição equipotencial' },
+      { id: 'E96 (4)', page: '10', dwg: '3D-EB-E96-010', desc: 'Barramento compacto modular de terra geral' }
+    ];
+
+    const state = {
+      lang: 'pt',
+      darkMode: false,
+      activeTab: 'cq',
+      checkedItems: {}, 
+      sheetName: 'Layout_001',
+      hvacScope: 'hvac',
+      hvacMaterial: 'Aço Carbono',
+      hvacGeom: 'Retangular',
+      hvacIso: 'Sem Isolamento',
+      hvacConn: 'jumper',
+      
+      trayEnv: 'Indoor', 
+      trayType: 'Ladder',
+      trayDisc: 'Electrical',
+      traySpecial: 'none', 
+      trayJumperType: 'comum', 
+      trayE86Modeled: true,
+      trayE86Role: 'normal', 
+      
+      dmsInput: '584420',
+      tagInput: '#BAL.BA11=751&LD041-000543'
+    };
+
+    function updateDmsTagConversion() {
+      const dmsInput = document.getElementById('dms-val-input');
+      const tagInput = document.getElementById('tag-val-input');
+      const resultEl = document.getElementById('dms-conversion-result');
+
+      if (!dmsInput || !tagInput || !resultEl) return;
+
+      state.dmsInput = dmsInput.value;
+      state.tagInput = tagInput.value;
+
+      let tag = state.tagInput.replace(/^#/, ''); 
+      let parts = tag.split('-');
+      
+      if (parts.length > 1) {
+        parts[parts.length - 1] = state.dmsInput; 
+        tag = parts.join('-');
+      } else {
+        tag = tag + '-' + state.dmsInput;
+      }
+      
+      resultEl.textContent = tag;
+    }
+
+    const DICTIONARY = {
+      pt: {
+        appTitle: "Engenharia & Qualidade",
+        appSubtitle: "Painel Integrado: CQ, HVAC, Piping e Bandejas",
+        tabCq: "Checklist de Qualidade",
+        tabHvac: "Aterramento HVAC",
+        tabBandejas: "Bandejas & Leitos",
+        lang: "Idioma",
+        clear: "Limpar",
+        print: "Imprimir",
+        copy: "Copiar",
+        copied: "Copiado!",
+        notes: "Notas de Engenharia",
+        obsTitle: "Observação Técnica de Instalação",
+        symbologyTitle: "Simbologia Esquematizada",
+        result: "Resultado",
+        noTypical: "N/A",
+        sheetName: "Nome da Folha / Layout",
+        guideIso: "Guia ISO / ABNT",
+        guideCortes: "Guia de Cortes",
+        scopeHvac: "Dutos HVAC",
+        scopePiping: "Tubulações",
+        material: "Material do Elemento 3D",
+        geometry: "Geometria da Secção",
+        isolation: "Isolamento Elétrico",
+        purpose: "Finalidade da Ligação",
+        jumper: "Jumper Coletor",
+        ground: "Ligação Geral (Malha)",
+        boxes: "Caixas de Aterramento",
+        carbonSteel: "Aço Carbono",
+        stainlessSteel: "Aço Inoxidável",
+        galvanizedSteel: "Aço Galvanizado",
+        copper: "Cobre",
+        equipment: "Equipamento",
+        rectangular: "Retangular",
+        circular: "Circular",
+        noIso: "Sem Isolamento",
+        withIso: "Com Isolamento",
+        svgFlangeTitle: "CONEXÃO DIRETA EM FLANGE PLANO (E51A / E53A)",
+        svgDuctWall: "Parede do Duto",
+        svgCopperLug: "Terminal em Cobre",
+        svgDirectConn: "Ligação mecânica direta",
+        svgEarthCable: "Cabo de Terra 16mm²",
+        svgIsolTitle: "SÉRIE COM ISOLAMENTO ELÉTRICO (E115 / E59 / E51B)",
+        svgDuctInner: "Duto Interno",
+        svgIsolLabel: "Isolamento Elétrico",
+        svgExtPin: "Pino de Prolongamento",
+        svgExtPinDesc: "Atravessa estanque o isolamento elétrico",
+        svgWeldedTitle: "ORELHA SOLDADA AO TUBO (E57)",
+        svgWeldedJoint: "Soldadura de Campo",
+        svgWeldedDesc: "Instalar orelha metálica antes da pintura",
+        svgClampTitle: "ABRAÇADEIRA METÁLICA DE APERTO (E58 / E52A)",
+        svgClampLug: "Abraçadeira Mecânica",
+        svgClampDesc1: "Dispensa soldadura física no tubo",
+        svgClampDesc2: "Ideal para Cobre e interfaces delicadas",
+        svgGeneralEquip: "LIGAÇÃO EQUIPOTENCIAL GERAL",
+        svgEquipTitle: "Aterramento de Continuidade",
+        svgEquipDesc: "Cabo de cobre flexível de 16mm²",
+        svgE53DTitle: "ATERRAMENTO DE EQUIPAMENTO (E53D)",
+        svgE53DFrame: "Carcaça do Equipamento / Caixa",
+        svgE53DStud: "Pino de Terra M10/M12",
+        svgE53DWarning: "Fixar diretamente na carcaça metálica limpa",
+        env: "Ambiente",
+        indoor: "Interior (Indoor)",
+        outdoor: "Exterior (Outdoor)",
+        supportType: "Formato do Suporte",
+        ladder: "Leito (Ladder)",
+        tray: "Calha (Tray)",
+        discipline: "Disciplina",
+        electrical: "Elétrica",
+        instrumental: "Instrumentação",
+        lighting: "Iluminação",
+        lugSymbolLabel: "Símbolo do LUG"
+      },
+      en: {
+        appTitle: "Engineering & Quality",
+        appSubtitle: "Integrated Panel: QA, HVAC, Piping & Trays",
+        tabCq: "Quality Checklist",
+        tabHvac: "HVAC Earthing",
+        tabBandejas: "Trays & Ladders",
+        lang: "Language",
+        clear: "Clear",
+        print: "Print",
+        copy: "Copy",
+        copied: "Copied!",
+        notes: "Engineering Notes",
+        obsTitle: "Technical Installation Note",
+        symbologyTitle: "Schematic Symbology",
+        result: "Result",
+        noTypical: "N/A",
+        sheetName: "Sheet Name / Layout",
+        guideIso: "ISO Guidelines",
+        guideCortes: "Section Guidelines",
+        scopeHvac: "HVAC Ducts",
+        scopePiping: "Piping",
+        material: "3D Element Material",
+        geometry: "Section Geometry",
+        isolation: "Electrical Isolation",
+        purpose: "Connection Purpose",
+        jumper: "Collector Jumper",
+        ground: "General Grounding",
+        boxes: "Earthing Boxes",
+        carbonSteel: "Carbon Steel",
+        stainlessSteel: "Stainless Steel",
+        galvanizedSteel: "Galvanized Steel",
+        copper: "Copper",
+        equipment: "Equipment",
+        rectangular: "Rectangular",
+        circular: "Circular",
+        noIso: "No Isolation",
+        withIso: "With Isolation",
+        svgFlangeTitle: "DIRECT CONNECTION ON FLAT FLANGE (E51A / E53A)",
+        svgDuctWall: "Duct Wall",
+        svgCopperLug: "Copper Lug",
+        svgDirectConn: "Direct mechanical connection",
+        svgEarthCable: "16mm² Earthing Cable",
+        svgIsolTitle: "ELECTRICAL ISOLATION SERIES (E115 / E59 / E51B)",
+        svgDuctInner: "Inner Duct",
+        svgIsolLabel: "Electrical Isolation",
+        svgExtPin: "Extension Pin",
+        svgExtPinDesc: "Watertight penetration of electrical isolation",
+        svgWeldedTitle: "WELDED EARTHING LUG ON PIPE (E57)",
+        svgWeldedJoint: "Field Welding",
+        svgWeldedDesc: "Install metal lug before painting",
+        svgClampTitle: "CLAMPED EARTHING COLLAR (E58 / E52A)",
+        svgClampLug: "Mechanical Clamp",
+        svgClampDesc1: "No physical welding on the tube",
+        svgClampDesc2: "Ideal for Copper and sensitive interfaces",
+        svgGeneralEquip: "GENERAL EQUIPOTENTIAL BONDING",
+        svgEquipTitle: "Continuity Earthing",
+        svgEquipDesc: "Flexible 16mm² copper cable",
+        svgE53DTitle: "EQUIPMENT EARTHING (E53D)",
+        svgE53DFrame: "Equipment Enclosure / Box",
+        svgE53DStud: "M10/M12 Ground Stud",
+        svgE53DWarning: "Attach directly to clean metal enclosure",
+        env: "Environment",
+        indoor: "Indoor",
+        outdoor: "Outdoor",
+        supportType: "Support Type",
+        ladder: "Cable Ladder",
+        tray: "Cable Tray",
+        discipline: "Discipline",
+        electrical: "Electrical",
+        instrumental: "Instrumental",
+        lighting: "Lighting",
+        lugSymbolLabel: "LUG Symbol"
+      },
+      es: {
+        appTitle: "Ingeniería y Calidad",
+        appSubtitle: "Panel Integrado: CC, HVAC, Tuberías y Bandejas",
+        tabCq: "Lista de Calidad",
+        tabHvac: "Tierra HVAC",
+        tabBandejas: "Bandejas y Lechos",
+        lang: "Idioma",
+        clear: "Limpiar",
+        print: "Imprimir",
+        copy: "Copiar",
+        copied: "¡Copiado!",
+        notes: "Notas de Ingeniería",
+        obsTitle: "Nota Técnica de Instalación",
+        symbologyTitle: "Simbologia Esquematizada",
+        result: "Resultado",
+        noTypical: "N/A",
+        sheetName: "Nombre de Hoja",
+        guideIso: "Guías ISO",
+        guideCortes: "Guías de Cortes",
+        scopeHvac: "Conductos HVAC",
+        scopePiping: "Tuberías",
+        material: "Material del Elemento 3D",
+        geometry: "Geometría de Sección",
+        isolation: "Aislamiento Eléctrico",
+        purpose: "Propósito",
+        jumper: "Puente Colector",
+        ground: "Tierra General",
+        boxes: "Cajas de Tierra",
+        carbonSteel: "Acero al Carbono",
+        stainlessSteel: "Acero Inoxidable",
+        galvanizedSteel: "Acero Galvanizado",
+        copper: "Cobre",
+        equipment: "Equipo",
+        rectangular: "Rectangular",
+        circular: "Circular",
+        noIso: "Sin Aislamiento",
+        withIso: "Con Aislamiento",
+        svgFlangeTitle: "CONEXÃO DIRETA EM BRIDA PLANA (E51A / E53A)",
+        svgDuctWall: "Pared del Conducto",
+        svgCopperLug: "Terminal de Cobre",
+        svgDirectConn: "Conexión mecánica directa",
+        svgEarthCable: "Cable de Tierra 16mm²",
+        svgIsolTitle: "SERIE CON AISLAMIENTO ELÉCTRICO (E115 / E59 / E51B)",
+        svgDuctInner: "Conducto Interno",
+        svgIsolLabel: "Aislamiento Eléctrico",
+        svgExtPin: "Pin Extensor",
+        svgExtPinDesc: "Atraviesa estanco el aislamiento eléctrico",
+        svgWeldedTitle: "OREJETA SOLDADA AL TUBO (E57)",
+        svgWeldedJoint: "Soldadura de Campo",
+        svgWeldedDesc: "Instalar orejeta metálica antes de pintar",
+        svgClampTitle: "ABRAZADERA METÁLICA DE APRIETE (E58 / E52A)",
+        svgClampLug: "Abrazadera Mecánica",
+        svgClampDesc1: "No requiere soldadura física en el tubo",
+        svgClampDesc2: "Ideal para Cobre e interfaces delicadas",
+        svgGeneralEquip: "CONEXIÓN EQUIPOTENCIAL GENERAL",
+        svgEquipTitle: "Puesta a Tierra de Continuidad",
+        svgEquipDesc: "Cable de cobre flexible de 16mm²",
+        svgE53DTitle: "PUESTA A TIERRA DE EQUIPO (E53D)",
+        svgE53DFrame: "Carcasa del Equipo / Caja",
+        svgE53DStud: "Perno de Tierra M10/M12",
+        svgE53DWarning: "Fijar diretamente en la carcasa metálica limpia",
+        env: "Ambiente",
+        indoor: "Interior",
+        outdoor: "Exterior",
+        supportType: "Tipo de Soporte",
+        ladder: "Lecho (Ladder)",
+        tray: "Bandeja (Tray)",
+        discipline: "Disciplina",
+        electrical: "Eléctrica",
+        instrumental: "Instrumentación",
+        lighting: "Iluminación",
+        lugSymbolLabel: "Símbolo do LUG"
+      },
+      hi: {
+        appTitle: "इंजीनियरिंग और गुणवत्ता",
+        appSubtitle: "एकीकृत पैनल: गुणवत्ता नियंत्रण, एचवीएसी, पाइपिंग और ट्रे",
+        tabCq: "गुणवत्ता चेकलिस्ट",
+        tabHvac: "इंजीनियरिंग अर्थिंग",
+        tabBandejas: "ट्रे और लैडर",
+        lang: "भाषा",
+        clear: "साफ़ करें",
+        print: "प्रिंट",
+        copy: "कॉपी",
+        copied: "कॉपी किया गया!",
+        notes: "इंजीनियरिंग नोट्स",
+        obsTitle: "तकनीकी स्थापना निर्देश",
+        symbologyTitle: "योजनाबद्ध संकेत",
+        result: "परिणाम",
+        noTypical: "उपलब्ध नहीं",
+        sheetName: "शीट का नाम / लेआउट",
+        guideIso: "आईएसओ दिशानिर्देश",
+        guideCortes: "अनुभाग दिशानिर्देश",
+        scopeHvac: "एचवीएसी डक्ट्स",
+        scopePiping: "पाइपिंग",
+        material: "3D तत्व की सामग्री",
+        geometry: "अनुभाग की ज्यामिति",
+        isolation: "विद्युत इन्सुलेशन",
+        purpose: "कनेक्शन का उद्देश्य",
+        jumper: "कलेक्टर जम्पर",
+        ground: "सामान्य अर्थिंग",
+        boxes: "अर्थिंग बॉक्स",
+        carbonSteel: "कार्बन स्टील",
+        stainlessSteel: "स्टेनलेस स्टील",
+        galvanizedSteel: "जस्ती स्टील",
+        copper: "तांबा",
+        equipment: "उपकरण",
+        rectangular: "आयताकार",
+        circular: "गोलाकार",
+        noIso: "इन्सुलेशन के बिना",
+        withIso: "इन्सुलेशन के साथ",
+        svgFlangeTitle: "फ्लैट फ्लैंज पर सीधा कनेक्शन (E51A / E53A)",
+        svgDuctWall: "डक्ट की दीवार",
+        svgCopperLug: "कॉपर लग",
+        svgDirectConn: "सीधा यांत्रिक कनेक्शन",
+        svgEarthCable: "16mm² अर्थिंग केबल",
+        svgIsolTitle: "विद्युत इन्सुलेशन श्रृंखला (E115 / E59 / E51B)",
+        svgDuctInner: "आंतरिक डक्ट",
+        svgIsolLabel: "विद्युत इन्सुलेशन",
+        svgExtPin: "एक्सटेंशन पिन",
+        svgExtPinDesc: "विद्युत इन्सुलेशन को वाटरटाइट पार करता है",
+        svgWeldedTitle: "पाइप पर वेल्डेड अर्थिंग लग (E57)",
+        svgWeldedJoint: "फील्ड वेल्डिंग",
+        svgWeldedDesc: "पेंट करने से पहले धातु लग istanbul करें",
+        svgClampTitle: "क्लैंप्д अर्थिंग कॉラー (E58 / E52A)",
+        svgClampLug: "यांत्रिक क्लैंप",
+        svgClampDesc1: "ट्यूब पर कोई भौतिक वेल्डिंग नहीं",
+        svgClampDesc2: "तांबे और संवेदनशील सतहों के लिए आदर्श",
+        svgGeneralEquip: "सामान्य समविभव संबंधन (Bonding)",
+        svgEquipTitle: "निरंतरता अर्थिंग",
+        svgEquipDesc: "लचीली 16mm² कॉपर केबल",
+        svgE53DTitle: "उपकरण अर्थिंग (E53D)",
+        svgE53DFrame: "उपकरण संलग्नक / बॉक्स",
+        svgE53DStud: "M10/M12 ग्राउंड स्टд",
+        svgE53DWarning: "साफ धातु फ्रेम से सीधे कनेक्ट करें",
+        env: "वातावरण",
+        indoor: "इनडोर",
+        outdoor: "आउटडोर",
+        supportType: "समर्थन प्रकार",
+        ladder: "केबल लैडर",
+        tray: "केबल ट्रे",
+        discipline: "अनुशासन",
+        electrical: "विद्युत",
+        instrumental: "उपकरण (Instrumental)",
+        lighting: "प्रकाश",
+        lugSymbolLabel: "LUG प्रतीक"
+      }
+    };
+
+    const Icons = {
+      Shield: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>',
+      Wind: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/></svg>',
+      Layers: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 17 22 12"/></svg>',
+      Globe: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>',
+      Sun: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41m12.73-12.73l-1.41 1.41"/></svg>',
+      Moon: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>',
+      Copy: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>',
+      Check: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><polyline points="20 6 9 17 4 12"/></svg>',
+      Minus: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M5 12h14"/></svg>',
+      Printer: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>',
+      Trash: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>',
+      Book: '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>',
+      X: '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>',
+      Box: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>',
+      Droplet: '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z"/></svg>',
+      Info: '<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="inline"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>',
+    };
+
+    const hvacSpecialRuleText = {
+      pt: 'REGRAS UTILIZADAS:\n\n• GALVANIZADO CIRCULAR NÃO ISOLADO, PRECISA JUMPEAR A CADA FLANGE e (SOMENTE A CADA 20 METROS OU OS EXTREMOS) - APLICADO PARA HVAC.\n• GALVANIZADO CIRCULAR ISOLADO, PRECISA DE JUMPER A CADA FLANGE E TROCA DE DIÂMETRO - APLICADO EM PIPE.',
+      en: 'APPLIED RULES:\n\n• NON-INSULATED CIRCULAR GALVANIZED requires jumper at each flange and (ONLY EVERY 20 METERS OR AT THE ENDS) - APPLIED FOR HVAC.\n• INSULATED CIRCULAR GALVANIZED requires jumper at each flange and diameter change - APPLIED IN PIPE.',
+      es: 'REGLAS APLICADAS:\n\n• GALVANIZADO CIRCULAR NO AISLADO, REQUIERE PUENTE EN CADA BRIDA y (SOLO CADA 20 METROS O EN LOS EXTREMOS) - APLICADO PARA HVAC.\n• GALVANIZADO CIRCULAR AISLADO, REQUIERE PUENTE EN CADA BRIDA Y CAMBIO DE DIÁMETRO - APLICADO EN TUBERÍA.',
+      hi: 'प्रयुक्त नियम:\n\n• गैर-अछूता परिपत्र जस्ती, प्रत्येक निकला हुआ किनारा पर जम्पर की आवश्यकता होती है और (केवल हर 20 मीटर या सिरों पर) - एचवीएसी के लिए लागू।\n• अछूता परिपत्र जस्ती, प्रत्येक निकला हुआ किनारा और व्यास परिवर्तन पर जम्पर की आवश्यकता होती है - पाइप में लागू।'
+    };
+
+    const CHECKLIST_DATA = [
+      {
+        type: 'internal',
+        category: { pt: "Carimbo (Parte Inferior Direita da Folha)", en: "Title Block (Bottom Right)", es: "Cajetín (Parte Inferior Derecha)", hi: "शीर्षक ब्लॉक (नीचे दाईं ओर)" },
+        items: [
+          { id: "ver1", text: "Data correta (data correspondente ao dia de entrega da semana)?", tag: "Verificação" },
+          { id: "ver2", text: "Nome da folha de acordo com os dados da MDL (DMS identifier e Employer Doc)? Substituir numeração pelo correspondente DMS (584XXX). Ex: #BAL.BA11=751&LD041-000543 -> BAL.BA11=751&LD041-584420", tag: "MDL", tagImportant: "CRÍTICO" },
+          { id: "ver3", text: "Titles preenchidos com os dados da MDL?", tag: "MDL" },
+          { id: "ver4", text: "Escala denominada no carimbo estar de acordo com a viewport?", tag: "Escala", tagImportant: "CRÍTICO" },
+          { id: "ver5", text: "Número de folhas corretos (ex: 1 of 10)?", tag: "Layout" },
+          { id: "ver6", text: "Realizar a substituição do número do Employer Doc por 751?", tag: "Atenção" }
+        ]
+      },
+      {
+        type: 'internal',
+        category: { pt: "Keyplan (Parte Superior Direita da Folha)", en: "Keyplan (Top Right)", es: "Keyplan (Parte Superior Derecha)", hi: "कीप्लान (ऊपर dại ओर)" },
+        items: [
+          { id: "kpl1", text: "Verificar se a área (hachurada) está correspondente à sua planta? (Obrigatório manter o Keyplan visível na mesma folha/layout da Tabela de Pontos de Aterramento)", tag: "Layout", tagImportant: "CRÍTICO" }
+        ]
+      },
+      {
+        type: 'internal',
+        category: { pt: "Área de Execução do Desenho (Viewports)", en: "Drawing Area (Viewports)", es: "Área de Ejecución (Viewports)", hi: "ड्राइंग क्षेत्र (व्यूपोर्टส์)" },
+        items: [
+          { id: "vwp1", text: "Orientação do norte na direção correta?", tag: "Norte", tagImportant: "CRÍTICO" },
+          { id: "vwp2", text: "Escala da viewport de acordo com a escala denominada no carimbo?", tag: "Escala" },
+          { id: "vwp3", text: "Verificar se no layout as fontes da tabela estão ficando com o tamanho de 3.5mm e em Arial Narrow?", tag: "Fonte" }
+        ]
+      },
+      {
+        type: 'internal',
+        category: { pt: "Demais Informações", en: "Other Information", es: "Demás Información", hi: "अन्य जानकारी" },
+        items: [
+          { id: "dem1", text: "Verificar a consistência geral, correta atribuição de camadas (layers do contratante) e demais informações pertinentes ao desenho.", tag: "Geral" }
+        ]
+      },
+      {
+        type: 'iso',
+        category: { pt: "Formato e Margens (Normas ISO)", en: "Format and Margins (ISO)", es: "Formato y Margens (ISO)", hi: "प्रारूप and Margins (ISO)" },
+        items: [
+          { id: "fmt1", text: "Formato da folha escolhido corretamente (A0, A1, A2, A3 ou A4)?", tag: "Norma", tagImportant: "CRÍTICO" },
+          { id: "fmt2", text: "Margem esquerda com 25mm e demais margens corretas conforme o tamanho da folha?", tag: "Layout" },
+          { id: "fmt3", text: "Legenda/Selo preenchido com todas as informações do projecto e autor?", tag: "Identificação", tagImportant: "CRÍTICO" }
+        ]
+      },
+      {
+        type: 'iso',
+        category: { pt: "Espessuras e Tipos de Linhas (ISO 128)", en: "Line Types & Hierarchy (ISO 128)", es: "Tipos de Líneas (ISO 128)", hi: "रेखा प्रकार (आईएसओ 128)" },
+        items: [
+          { id: "rep1", text: "Espessuras de linha aplicadas rigorosamente (larga = 0.5/0.7mm para contornos visíveis, estreita = 0.25/0.35mm para hachuras e cotas)?", tag: "ISO 128", tagImportant: "CRÍTICO" },
+          { id: "rep2", text: "Arestas invisíveis representadas de forma uniforme com linhas tracejadas estreitas (Tipo E ou F)?", tag: "ISO 128" },
+          { id: "rep3", text: "Linhas de centro e eixos de simetria representados com traço-e-ponto estreito (Tipo G)?", tag: "ISO 128" },
+          { id: "rep4", text: "Cruzamentos de linhas de centro ocorrem exatamente na interseção de traços (e nunca nos espaços vazios)?", tag: "Estética" },
+          { id: "rep5", text: "As linhas de centro se estendem de 2 a 5mm além das bordas do contorno do objeto correspondente?", tag: "ISO 128" },
+          { id: "rep6", text: "Plano de corte representado por traço-e-ponto estreito com extremidades e mudanças de direção em traços largos (Tipo H)?", tag: "Cortes", tagImportant: "IMPORTANTE" }
+        ]
+      },
+      {
+        type: 'iso',
+        category: { pt: "Organização e Limpeza (Cotas, Textos e Hachuras)", en: "Drawing Cleanliness (ISO Quality)", es: "Organización y Calidad Estética", hi: "आयाम और पाठ (आईएसओ)" },
+        items: [
+          { id: "cot1", text: "Cotas paralelas possuem espaçamento uniforme de no mínimo 7mm entre si e 10mm do contorno da peça (ISO 129-1)?", tag: "ISO 129-1" },
+          { id: "cot2", text: "Evitado o cruzamento entre linhas de cota e de chamada (cotas menores mais próximas do desenho e maiores mais afastadas)?", tag: "Layout" },
+          { id: "cot3", text: "Tamanho de fontes (ISO 3098) padronizado, sem sobreposição com hachuras ou linhas do duto/bandeja?", tag: "ISO 3098", tagImportant: "CRÍTICO" },
+          { id: "cot4", text: "Indicação de escala geral declarada no carimbo e escalas particulares anotadas abaixo do respectivo corte/vista?", tag: "Escala" },
+          { id: "cot5", text: "O desenho possui o símbolo de projeção no diedro correto (1º Diedro para ABNT/ISO ou 3º Diedro)?", tag: "ISO 5456", tagImportant: "IMPORTANTE" }
+        ]
+      }
+    ];
+
+    const DB_HVAC = {
+      hvac: [
+        { material: 'Aço Carbono', geometry: 'Retangular', insulated: 'Sem Isolamento', typicalJumper: 'E51A-D1', typicalGround: 'E51A-D2', notes: { pt: 'Fixação direta no duto ou flange. Típico padrão para dutos metálicos sem isolamento elétrico de aço carbono.' } },
+        { material: 'Aço Carbono', geometry: 'Retangular', insulated: 'Com Isolamento', typicalJumper: 'E51B-D1', typicalGround: 'E51B-D2', notes: { pt: 'Requer kit de travessia do revestimento de isolamento elétrico para garantir o contacto físico direto com a chapa de aço.' } },
+        { material: 'Aço Carbono', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E51C-D1', typicalGround: 'E51C-D2', notes: { pt: 'Parafuso de ligação à terra fixado diretamente na carcaça cilíndrica sem necessidade de transpor isolamento.' } },
+        { material: 'Aço Carbono', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E51C-D1', typicalGround: 'E51C-D2', notes: { pt: 'O parafuso de ligação à terra E51C é aplicado da mesma forma que em dutos sem isolamento.' } },
+        { material: 'Aço Inoxidável', geometry: 'Retangular', insulated: 'Sem Isolamento', typicalJumper: 'E53A-D1', typicalGround: 'E53A-D2', notes: { pt: 'Abraçadeira ou terminal de pressão aparafusado em aço inox para evitar corrosão galvânica.' } },
+        { material: 'Aço Inoxidável', geometry: 'Retangular', insulated: 'Com Isolamento', typicalJumper: 'E53B-D1', typicalGround: 'E53B-D2', notes: { pt: 'Utilizar os componentes adequados da série E53B para transpassar o isolamento elétrico em duto de inox.' } },
+        { material: 'Aço Inoxidável', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E53C-D1', typicalGround: 'E52C', notes: { pt: 'Atenção especial: O típico E53C é projetado para dutos circulares com flange rebitado ou flanges de acoplamento ISO pintados.' } },
+        { material: 'Aço Inoxidável', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E115A-D2', typicalGround: 'E115A-D1', notes: { pt: 'Uso de barreira isolante estanque e parafuso alongado de inox para atravessar a camada de isolamento elétrico.' } },
+        { material: 'Aço Galvanizado', geometry: 'Retangular', insulated: 'Sem Isolamento', typicalJumper: 'E52A-D1/D4', typicalGround: 'E52A-D2', notes: { pt: 'E52A-D1 = Grampo/abraçadeira de parafuso (Screw Clamp) / E52A-D4 = Condutor de jumper de ligação à terra.' } },
+        { material: 'Aço Galvanizado', geometry: 'Retangular', insulated: 'Com Isolamento', typicalJumper: 'E52B-D3', typicalGround: 'E52B-D2', notes: { pt: 'La ligação à terra de 20 metros para dutos com isolamento elétrico galvanizados utiliza o típico E52B-D2.' } },
+        { material: 'Aço Galvanizado', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E53C-D1', typicalGround: 'E52D', notes: { pt: 'O típico E52D é a conexão física padrão para rede de terra geral em tubulações circulares galvanizadas. NOTA: PARA TUBO CIRCULAR COM FLANGE DEVE SER USADO O LUG E53C.' }, specialRule: hvacSpecialRuleText },
+        { material: 'Aço Galvanizado', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E115B-D2', typicalGround: 'E115B-D1', notes: { pt: 'Manga de isolamento e vedação para dutos redondos galvanizados com isolamento elétrico protetivo.' }, specialRule: hvacSpecialRuleText },
+        { material: 'Equipamento', geometry: 'Retangular', insulated: 'Sem Isolamento', typicalJumper: 'E53D', typicalGround: 'E53D', notes: { pt: 'E53D é o aterramento direto de equipamentos, caixas de passagem e painéis elétricos na estrutura metálica.' } },
+        { material: 'Equipamento', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E53D', typicalGround: 'E53D', notes: { pt: 'E53D é o aterramento direto de equipamentos, caixas de passagem e painéis elétricos na estrutura metálica.' } }
+      ],
+      piping: [
+        { material: 'Aço Carbono', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E57/E58-D2', typicalGround: 'E57/E58-D1', notes: { pt: 'E57 indica o uso de uma orelha de ligação à terra soldada (welded starter lug) no corpo do tubo de aço carbono antes da pintura. E58 = terminal fixado via abraçadeira mecânica aparafusada.' } },
+        { material: 'Aço Inoxidável', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E57/E58-D2', typicalGround: 'E57/E58-D1', notes: { pt: 'E57 = terminal soldado ao tubo inox. E58 = terminal fixado via abraçadeira mecânica aparafusada (ótimo para preservar o inox e para válvulas/equipamentos).' } },
+        { material: 'Aço Inoxidável', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E59A', typicalGround: 'E59A', notes: { pt: 'O típico E59A prevê o pormenor de selagem contra entrada de humidade na isolação elétrica para tubos de inox.' } },
+        { material: 'Cobre', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E58-D2', typicalGround: 'E58-D1', notes: { pt: 'E58 = Abraçadeira mecânica de aperto regulável. ATENÇÃO: NUNCA tente soldar conexões de cobre no campo sem aprovação metalúrgica.' } },
+        { material: 'Cobre', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E59B', typicalGround: 'E59B', notes: { pt: 'Terminal de ligação à terra mecânico estanque adaptado para isolamento elétrico de tubos de cobre (E59B).' } },
+        { material: 'Aço Galvanizado', geometry: 'Circular', insulated: 'Sem Isolamento', typicalJumper: 'E58-D2', typicalGround: 'E58-D1', notes: { pt: 'E58 = Abraçadeira mecânica de aperto. Evita soldaduras térmicas que danificam e removem a película galvanizada protetora contra corrosão.' } },
+        { material: 'Aço Galvanizado', geometry: 'Circular', insulated: 'Com Isolamento', typicalJumper: 'E59C', typicalGround: 'E59C', notes: { pt: 'O kit E59C assegura a continuidade de terra na tubagem galvanizada com revestimento/isolamento elétrico sem agredir o tubo.' } },
+      ]
+    };
+
+    const DB_TRAYS = {
+      Electrical: {
+        Ladder: { typical: "E 54A-D1", lug: "E 08", notes: { pt: "Para elétrica principal, avaliar LUG E08 (p/ 120mm²). O cabo principal é definido no Cable Schedule do projeto." } },
+        Tray: { typical: "E 54A-D2", lug: "E 08", notes: { pt: "Para calhas elétricas de menor altura. LUG aplicado diretamente no Main Copper Wire (MCW)." } }
+      },
+      Instrumental: {
+        Ladder: { typical: "E 54B-D1", lug: "E 09", notes: { pt: "Sistemas de instrumentação e telecomunicações. Avaliar LUG E09/E10 (para cabos de 16mm²)." } },
+        Tray: { typical: "E 54B-D2", lug: "E 10", notes: { pt: "Bandejamento leve para instrumentação. Requer cabos flexíveis 16mm² indoor." } }
+      },
+      Lighting: {
+        Ladder: { typical: "E 54C-D1", lug: "E 09", notes: { pt: "Raramente aplicável a iluminação, mas previsto na norma. Usa LUG E09 p/ 16mm²." } },
+        Tray: { typical: "E 54C-D2", lug: "E 10", notes: { pt: "Típico padrão para rotas de iluminação secundária e painéis menores. LUG E10." } }
+      }
+    };
+
+    function initApp() {
+      if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        state.darkMode = true;
+        toggleDarkMode(true);
+      } else {
+        toggleDarkMode(false);
+      }
+      translateUI();
+      switchTab('cq');
+    }
+
+    function toggleDarkMode(force) {
+      if (force === undefined) {
+        state.darkMode = !state.darkMode;
+      } else {
+        state.darkMode = force;
+      }
+      const htmlEl = document.documentElement;
+      const themeBtn = document.getElementById('theme-toggle-btn');
+      
+      if (state.darkMode) {
+        htmlEl.classList.add('dark');
+        themeBtn.innerHTML = Icons.Sun;
+        themeBtn.className = "p-2 rounded-lg border border-brand-light bg-brand-darker text-amber-400 hover:bg-brand transition-all";
+      } else {
+        htmlEl.classList.remove('dark');
+        themeBtn.innerHTML = Icons.Moon;
+        themeBtn.className = "p-2 rounded-lg border border-zinc-200 bg-slate-50 text-zinc-500 hover:bg-zinc-200 transition-all";
+      }
+      renderActiveTab();
+    }
+
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      
+      ['cq', 'hvac', 'bandejas'].forEach(tab => {
+        const btn = document.getElementById(`tab-${tab}-btn`);
+        const btnMob = document.getElementById(`tab-${tab}-btn-mob`);
+        
+        if (tab === tabId) {
+          if (btn) btn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 bg-white dark:bg-brand text-brand dark:text-white shadow";
+          if (btnMob) btnMob.className = "px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 bg-brand dark:bg-brand-accent text-white shadow";
+        } else {
+          if (btn) btn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 text-zinc-500 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200";
+          if (btnMob) btnMob.className = "px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 bg-slate-100 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400";
+        }
+      });
+
+      renderActiveTab();
+    }
+
+    function renderActiveTab() {
+      if (state.activeTab === 'cq') {
+        renderChecklist();
+      } else if (state.activeTab === 'hvac') {
+        renderHVAC();
+      } else if (state.activeTab === 'bandejas') {
+        renderTrays();
+      }
+    }
+
+    function changeLanguage(lang) {
+      state.lang = lang;
+      translateUI();
+    }
+
+    function translateUI() {
+      const t = DICTIONARY[state.lang] || DICTIONARY['pt'];
+      document.getElementById('header-title').textContent = t.appTitle;
+      document.getElementById('header-subtitle').textContent = t.appSubtitle;
+      document.getElementById('tab-cq-label').textContent = t.tabCq;
+      document.getElementById('tab-hvac-label').textContent = t.tabHvac;
+      document.getElementById('tab-bandejas-label').textContent = t.tabBandejas;
+
+      document.getElementById('tab-cq-btn-mob').textContent = t.tabCq.split(' ')[0];
+      document.getElementById('tab-hvac-btn-mob').textContent = t.tabHvac.split(' ')[0];
+      document.getElementById('tab-bandejas-btn-mob').textContent = t.tabBandejas.split(' ')[0];
+
+      document.getElementById('modal-iso-title').textContent = t.guideIso;
+      document.getElementById('modal-cortes-title').textContent = t.guideCortes;
+      document.getElementById('modal-boxes-title').textContent = t.boxes;
+
+      renderModalContents();
+      renderActiveTab();
+    }
+
+    function copyTextToClipboard(text, elementId) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+
+      const btn = document.getElementById(elementId);
+      const originalText = btn.innerHTML;
+      btn.innerHTML = `${Icons.Check} ${DICTIONARY[state.lang].copied}`;
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+      }, 1500);
+    }
+
+    function openModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+      if (modalId === 'modal-boxes') {
+        renderEarthingBoxesTable();
+      }
+    }
+
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleChecklist(itemId, action = 'checked') {
+      if (state.checkedItems[itemId] === action) {
+        delete state.checkedItems[itemId];
+      } else {
+        state.checkedItems[itemId] = action;
+      }
+      renderChecklist();
+    }
+
+    function clearChecklist() {
+      state.checkedItems = {};
+      renderChecklist();
+    }
+
+    function renderChecklist() {
+      const t = DICTIONARY[state.lang] || DICTIONARY['pt'];
+      let totalItems = 0;
+      let checkedCount = 0;
+
+      CHECKLIST_DATA.forEach(cat => {
+        cat.items.forEach(item => {
+          totalItems++;
+          if (state.checkedItems[item.id]) checkedCount++; 
+        });
+      });
+      const progress = totalItems === 0 ? 0 : Math.round((checkedCount / totalItems) * 100);
+
+      const renderCategoriesBlock = (categories) => {
+        return categories.map(cat => {
+          const catTitle = cat.category[state.lang] || cat.category.pt;
+          return `
+            <div class="bg-white dark:bg-brand p-5 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm print-break-inside-avoid">
+              <h3 class="text-sm font-black text-zinc-800 dark:text-white mb-4 flex items-center gap-2 border-b border-zinc-100 dark:border-brand-darker pb-2">
+                <span class="w-2 h-2 rounded-full bg-brand dark:bg-brand-accent"></span>
+                ${catTitle}
+              </h3>
+              <div class="space-y-3">
+                ${cat.items.map(item => {
+                  const status = state.checkedItems[item.id];
+                  const isChecked = status === 'checked';
+                  const isNa = status === 'na';
+                  const isDone = isChecked || isNa;
+                  
+                  return `
+                    <div class="flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${isDone ? 'bg-slate-50 border-brand-accent/40 dark:bg-brand-darker dark:border-brand-accent/50' : 'bg-white border-zinc-200 hover:border-brand-accent/60 dark:bg-brand dark:border-brand-light dark:hover:border-white/50'}" onclick="toggleChecklist('${item.id}', 'checked')">
+                      <div class="mt-0.5 w-5 h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${isChecked ? 'bg-brand dark:bg-brand-accent border-brand text-white' : (isNa ? 'bg-zinc-400 border-zinc-400 text-white dark:bg-zinc-600 dark:border-zinc-600' : 'border-zinc-300 dark:border-brand-light bg-transparent')}">
+                        ${isChecked ? Icons.Check : (isNa ? Icons.Minus : '')}
+                      </div>
+                      <div class="flex-1 flex flex-col sm:flex-row sm:items-start justify-between gap-2">
+                        <span class="text-xs font-semibold leading-relaxed flex-1 mt-0.5 ${isDone ? 'text-zinc-500 dark:text-zinc-400 line-through opacity-70' : 'text-zinc-700 dark:text-zinc-200'}">
+                          ${item.text}
+                        </span>
+                        <div class="flex flex-wrap gap-2 shrink-0 mt-2 sm:mt-0 items-center">
+                          <button onclick="event.stopPropagation(); toggleChecklist('${item.id}', 'na')" class="px-2 py-0.5 rounded text-[10px] font-bold border transition-colors ${isNa ? 'bg-zinc-600 text-white border-zinc-700 dark:bg-zinc-300 dark:text-zinc-900' : 'bg-zinc-100 text-zinc-500 border-zinc-200 hover:bg-zinc-200 dark:bg-brand-darker dark:text-zinc-400 dark:border-brand-light dark:hover:bg-brand-light/30'}">
+                            N/A
+                          </button>
+                          ${item.tag ? `
+                            <span class="px-2 py-0.5 rounded text-[10px] font-medium print-border print-text-black ${isDone ? 'bg-zinc-100 text-zinc-400 dark:bg-brand-darker dark:text-zinc-500' : 'bg-zinc-100 text-zinc-600 dark:bg-brand-darker dark:text-zinc-300'}">
+                              ${item.tag}
+                            </span>
+                          ` : ''}
+                          ${item.tagImportant ? `
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold print-border print-text-black ${isDone ? 'bg-zinc-100 text-zinc-400 dark:bg-brand-darker dark:text-zinc-600' : 'bg-amber-100 text-amber-700 dark:bg-rose-950/60 dark:text-rose-300'}">
+                              ${item.tagImportant}
+                            </span>
+                          ` : ''}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            </div>
+          `;
+        }).join('');
+      };
+
+      const internalCats = CHECKLIST_DATA.filter(c => c.type === 'internal');
+      const isoCats = CHECKLIST_DATA.filter(c => c.type === 'iso');
+
+      let html = `
+        <div class="space-y-6 animate-fadeIn">
+          <div class="flex flex-col md:flex-row gap-4 justify-between items-center bg-white dark:bg-brand p-4 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm">
+            <div class="flex items-center gap-3 w-full md:w-auto">
+              <input 
+                type="text" 
+                id="sheetNameInput"
+                value="${state.sheetName}" 
+                oninput="state.sheetName = this.value" 
+                placeholder="${t.sheetName}"
+                class="bg-slate-100 dark:bg-brand-darker border border-zinc-200 dark:border-brand-light px-3 py-2 rounded-lg text-sm font-bold w-full md:w-64 outline-none focus:border-brand-accent dark:focus:border-brand-accent transition-colors text-zinc-900 dark:text-zinc-100"
+              />
+            </div>
+            <div class="flex flex-wrap gap-2 justify-end w-full md:w-auto">
+              <button onclick="openModal('modal-iso')" class="px-3 py-1.5 rounded-lg border border-brand-accent text-brand-accent dark:text-brand-light font-bold text-xs hover:bg-brand-accent hover:text-white dark:hover:text-white transition-colors flex items-center gap-1">
+                ${Icons.Book} ${t.guideIso}
+              </button>
+              <button onclick="openModal('modal-cortes')" class="px-3 py-1.5 rounded-lg border border-brand-accent text-brand-accent dark:text-brand-light font-bold text-xs hover:bg-brand-accent hover:text-white dark:hover:text-white transition-colors flex items-center gap-1">
+                ${Icons.Layers} ${t.guideCortes}
+              </button>
+              <div class="w-px h-6 bg-zinc-300 dark:bg-brand-light mx-1 self-center"></div>
+              <button onclick="clearChecklist()" class="px-3 py-1.5 rounded-lg bg-rose-50 text-rose-600 border border-rose-200 dark:bg-rose-950/40 dark:border-rose-900/50 dark:text-rose-400 font-bold text-xs hover:opacity-80 transition-colors flex items-center gap-1">
+                ${Icons.Trash} ${t.clear}
+              </button>
+              <button onclick="window.print()" class="px-3 py-1.5 rounded-lg bg-zinc-100 text-zinc-700 border border-zinc-300 dark:bg-brand-light dark:border-brand-accent dark:text-zinc-100 font-bold text-xs hover:opacity-80 transition-colors flex items-center gap-1">
+                ${Icons.Printer} ${t.print}
+              </button>
+            </div>
+          </div>
+
+          <div class="bg-white dark:bg-brand p-4 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm">
+            <div class="flex justify-between items-center mb-2">
+              <span class="text-xs font-black uppercase tracking-wider text-zinc-500 dark:text-zinc-400">Progresso Geral</span>
+              <span class="text-sm font-black text-brand dark:text-brand-accent">${progress}%</span>
+            </div>
+            <div class="w-full bg-slate-200 dark:bg-brand-darker h-2 rounded-full overflow-hidden">
+              <div class="bg-brand dark:bg-brand-accent h-full transition-all duration-300 ease-out" style="width: ${progress}%"></div>
+            </div>
+          </div>
+
+          <div class="mt-8 mb-2 flex items-center gap-3">
+             <div class="w-2 h-6 bg-brand dark:bg-brand-accent rounded-sm"></div>
+             <h2 class="text-base font-black uppercase tracking-widest text-brand dark:text-white">Checklist Interno do Projeto</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            ${renderCategoriesBlock(internalCats)}
+          </div>
+
+          <div class="mt-10 mb-2 flex items-center gap-3">
+             <div class="w-2 h-6 bg-amber-500 rounded-sm"></div>
+             <h2 class="text-base font-black uppercase tracking-widest text-brand dark:text-white">Normas de Qualidade (ISO)</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-10">
+            ${renderCategoriesBlock(isoCats)}
+          </div>
+        </div>
+      `;
+      document.getElementById('main-container').innerHTML = html;
+      updateDmsTagConversion();
+    }
+
+    function getMaterialStyle(mat, isSelected) {
+      if (!isSelected) {
+        return state.darkMode 
+          ? "bg-zinc-900 border-zinc-800 text-zinc-400 hover:bg-brand-darker hover:border-brand-accent/50" 
+          : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-50 hover:border-zinc-300";
+      }
+      
+      switch (mat) {
+        case 'Aço Carbono':
+          return state.darkMode ? "bg-zinc-800 border-zinc-500 text-zinc-100 font-bold shadow-md" : "bg-zinc-200 border-zinc-400 text-zinc-800 font-bold shadow-sm";
+        case 'Aço Inoxidável':
+          return state.darkMode ? "bg-purple-950/60 border-purple-600 text-purple-200 font-bold shadow-md" : "bg-purple-100 border-purple-300 text-purple-800 font-bold shadow-sm";
+        case 'Aço Galvanizado':
+          return state.darkMode ? "bg-emerald-950/50 border-emerald-700 text-emerald-200 font-bold shadow-md" : "bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-sm";
+        case 'Cobre':
+          return state.darkMode ? "bg-amber-950/50 border-amber-700 text-amber-200 font-bold shadow-md" : "bg-amber-50 border-amber-300 text-amber-800 font-bold shadow-sm";
+        case 'Equipamento':
+          return state.darkMode ? "bg-indigo-950/60 border-indigo-600 text-indigo-200 font-bold shadow-md" : "bg-indigo-100 border-indigo-300 text-indigo-800 font-bold shadow-sm";
+        default:
+          return "bg-brand border-brand-accent text-white font-bold";
+      }
+    }
+
+    function selectHvacScope(scope) {
+      state.hvacScope = scope;
+      if (scope === 'piping') {
+        state.hvacGeom = 'Circular';
+        if (state.hvacMaterial === 'Equipamento') {
+          state.hvacMaterial = 'Aço Carbono';
+        }
+      }
+      renderHVAC();
+    }
+
+    function selectHvacMaterial(material) {
+      state.hvacMaterial = material;
+      renderHVAC();
+    }
+
+    function selectHvacGeom(geom) {
+      if (state.hvacMaterial === 'Equipamento') return;
+      state.hvacGeom = geom;
+      renderHVAC();
+    }
+
+    function selectHvacIso(iso) {
+      if (state.hvacMaterial === 'Equipamento') return;
+      state.hvacIso = iso;
+      renderHVAC();
+    }
+
+    function selectHvacConn(conn) {
+      if (state.hvacMaterial === 'Equipamento') return;
+      state.hvacConn = conn;
+      renderHVAC();
+    }
+
+    function renderHVAC() {
+      const t = DICTIONARY[state.lang] || DICTIONARY['pt'];
+      const list = DB_HVAC[state.hvacScope] || [];
+      const isEquipment = state.hvacMaterial === 'Equipamento';
+      
+      const matched = isEquipment 
+        ? list.find(i => i.material === 'Equipamento') 
+        : list.find(i => i.material === state.hvacMaterial && i.geometry === state.hvacGeom && i.insulated === state.hvacIso);
+      
+      const finalTypical = matched ? (isEquipment ? 'E53D' : (state.hvacConn === 'jumper' ? matched.typicalJumper : matched.typicalGround)) : t.noTypical;
+
+      const strokeColor = state.darkMode ? '#e4e4e7' : '#18181b';
+      const strokeBg = state.darkMode ? '#00161f' : '#f4f4f5';
+      const borderBg = state.darkMode ? '#003e57' : '#e4e4e7';
+      const textColor = state.darkMode ? '#f4f4f5' : '#18181b';
+      const secondaryText = state.darkMode ? '#94a3b8' : '#71717a';
+
+      const materials = ['Aço Carbono', 'Aço Inoxidável', 'Aço Galvanizado'];
+      if (state.hvacScope === 'piping') {
+        materials.push('Cobre');
+      } else {
+        materials.push('Equipamento');
+      }
+
+      let svgHTML = '';
+      if (finalTypical !== t.noTypical) {
+        const code = finalTypical.toUpperCase();
+        if (code.includes('E53D')) {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgE53DTitle}</text>
+              <rect x="70" y="70" width="160" height="100" fill="${strokeBg}" stroke="${strokeColor}" stroke-width="3" rx="2" />
+              <text x="80" y="120" fill="${secondaryText}" font-size="10" font-weight="500">${t.svgE53DFrame}</text>
+              <circle cx="180" cy="120" r="12" fill="${state.darkMode ? '#003e57' : '#d4d4d8'}" />
+              <path d="M 180 120 C 230 120, 260 170, 330 170" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <rect x="171" y="114" width="18" height="12" fill="#d97706" rx="1" />
+              <text x="245" y="105" fill="${textColor}" font-size="11" font-weight="600">${t.svgE53DStud}</text>
+              <text x="245" y="120" fill="#10b981" font-size="10" font-weight="600">${t.svgEarthCable}</text>
+              <text x="20" y="200" fill="#ef4444" font-size="9" font-weight="500">${t.svgE53DWarning}</text>
+            </svg>
+          `;
+        } else if (code.includes('E51A') || code.includes('E53A')) {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgFlangeTitle}</text>
+              <path d="M 60 170 L 190 170 L 190 60" stroke="${strokeColor}" stroke-width="4" fill="none" />
+              <text x="75" y="145" fill="${strokeColor}" font-size="10" font-weight="500">${t.svgDuctWall}</text>
+              <rect x="175" y="155" width="30" height="30" fill="${strokeBg}" stroke="${borderBg}" rx="1" />
+              <path d="M 196 115 C 250 115, 270 180, 340 180" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <rect x="187" y="108" width="18" height="14" fill="#d97706" rx="2" />
+              <text x="225" y="95" fill="${textColor}" font-size="11" font-weight="600">${t.svgCopperLug}</text>
+              <text x="225" y="125" fill="#10b981" font-size="10" font-weight="600">${t.svgEarthCable}</text>
+            </svg>
+          `;
+        } else if (code.includes('E51B') || code.includes('E53B') || code.includes('E115') || code.includes('E59')) {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgIsolTitle}</text>
+              <rect x="60" y="110" width="280" height="30" fill="${strokeBg}" stroke="${borderBg}" />
+              <text x="70" y="128" fill="${secondaryText}" font-size="10">${t.svgDuctInner}</text>
+              <rect x="60" y="85" width="280" height="25" fill="#fef08a" opacity="0.3" stroke="#facc15" stroke-width="1" stroke-dasharray="3 3" />
+              <text x="210" y="102" fill="#ca8a04" font-size="9" font-weight="600">${t.svgIsolLabel}</text>
+              <path d="M 200 80 C 240 50, 280 50, 320 80" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <text x="225" y="175" fill="${textColor}" font-size="11" font-weight="600">${t.svgExtPin}</text>
+            </svg>
+          `;
+        } else if (code.includes('E57')) {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgWeldedTitle}</text>
+              <path d="M 70 170 C 70 90, 150 70, 240 70" stroke="${strokeBg}" stroke-width="16" fill="none" stroke-linecap="round" />
+              <path d="M 180 38 C 230 38, 275 90, 320 110" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <rect x="172" y="32" width="16" height="12" fill="#d97706" rx="1" />
+              <text x="210" y="155" fill="#f87171" font-size="11" font-weight="600">${t.svgWeldedJoint}</text>
+            </svg>
+          `;
+        } else if (code.includes('E58') || code.includes('E52A')) {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgClampTitle}</text>
+              <circle cx="150" cy="120" r="45" fill="none" stroke="${strokeBg}" stroke-width="10" />
+              <path d="M 133 70 C 100 40, 50 70, 35 110" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <text x="220" y="110" fill="${textColor}" font-size="11" font-weight="600">${t.svgClampLug}</text>
+            </svg>
+          `;
+        } else {
+          svgHTML = `
+            <svg viewBox="0 0 400 220" class="w-full h-auto rounded-xl border bg-slate-50 border-zinc-200 dark:bg-brand-darker dark:border-brand-light p-4">
+              <text x="20" y="25" fill="${secondaryText}" font-size="11" font-weight="600">${t.svgGeneralEquip}</text>
+              <rect x="50" y="60" width="110" height="80" fill="${strokeBg}" stroke="${borderBg}" stroke-width="2" rx="4" />
+              <path d="M 160 100 C 230 100, 260 170, 330 170" stroke="#10b981" stroke-width="6" stroke-linecap="round" fill="none" />
+              <rect x="145" y="92" width="20" height="16" fill="#d97706" rx="2" />
+              <text x="185" y="90" fill="${textColor}" font-size="11" font-weight="600">${t.svgEquipTitle}</text>
+            </svg>
+          `;
+        }
+      }
+
+      let html = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
+          <div class="lg:col-span-6 space-y-6">
+            <div class="bg-white dark:bg-brand p-6 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm flex flex-col gap-5">
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">1. Domínio Principal</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="selectHvacScope('hvac')" class="py-2 px-3 rounded-lg text-xs font-bold transition-all flex justify-center items-center gap-2 border ${state.hvacScope === 'hvac' ? 'bg-gradient-to-br from-blue-700 to-blue-500 text-white border-blue-600 shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">
+                    ${Icons.Wind} ${t.scopeHvac}
+                  </button>
+                  <button onclick="selectHvacScope('piping')" class="py-2 px-3 rounded-lg text-xs font-bold transition-all flex justify-center items-center gap-2 border ${state.hvacScope === 'piping' ? 'bg-gradient-to-br from-amber-600 to-orange-500 text-white border-orange-600 shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">
+                    ${Icons.Droplet} ${t.scopePiping}
+                  </button>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">2. ${t.material}</span>
+                  <div class="flex flex-col gap-2">
+                    ${materials.map(mat => {
+                      const label = mat === 'Aço Carbono' ? t.carbonSteel : (mat === 'Aço Inoxidável' ? t.stainlessSteel : (mat === 'Aço Galvanizado' ? t.galvanizedSteel : (mat === 'Cobre' ? t.copper : t.equipment)));
+                      return `
+                        <button onclick="selectHvacMaterial('${mat}')" class="py-1.5 px-3 rounded-md border text-xs transition-all ${getMaterialStyle(mat, state.hvacMaterial === mat)}">
+                          ${label}
+                        </button>
+                      `;
+                    }).join('')}
+                  </div>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">3. ${t.geometry}</span>
+                  <div class="flex flex-col gap-2">
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacGeom('Retangular')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacGeom === 'Retangular' ? 'border-brand-accent dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500 opacity-60')}">
+                      ${t.rectangular}
+                    </button>
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacGeom('Circular')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacGeom === 'Circular' ? 'border-brand-accent dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500 opacity-60')}">
+                      ${t.circular}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">4. ${t.isolation}</span>
+                  <div class="flex flex-col gap-2">
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacIso('Sem Isolamento')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacIso === 'Sem Isolamento' ? 'bg-rose-100 text-rose-800 border-rose-300 dark:bg-rose-950/60 dark:text-rose-200 dark:border-rose-600' : 'bg-transparent border-zinc-200 dark:border-brand-light text-zinc-500')}">
+                      ${t.noIso}
+                    </button>
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacIso('Com Isolamento')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacIso === 'Com Isolamento' ? 'bg-cyan-100 text-cyan-800 border-cyan-300 dark:bg-cyan-950/60 dark:text-cyan-200 dark:border-cyan-600' : 'bg-transparent border-zinc-200 dark:border-brand-light text-zinc-500')}">
+                      ${t.withIso}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">5. ${t.purpose}</span>
+                  <div class="flex flex-col gap-2">
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacConn('jumper')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacConn === 'jumper' ? 'border-brand dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500')}">
+                      ${t.jumper}
+                    </button>
+                    <button ${isEquipment ? 'disabled' : ''} onclick="selectHvacConn('ground')" class="py-1.5 px-3 rounded-md border text-xs font-bold transition-all ${isEquipment ? 'opacity-30 cursor-not-allowed border-zinc-200 dark:border-brand-light text-zinc-400' : (state.hvacConn === 'ground' ? 'border-brand dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500')}">
+                      ${t.ground}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <button onclick="openModal('modal-boxes')" class="mt-2 py-3 rounded-lg border border-brand-accent dark:border-brand-light bg-brand-subtle dark:bg-brand-light/20 text-brand dark:text-white text-xs font-black uppercase tracking-widest flex justify-center items-center gap-2 hover:bg-brand-accent hover:text-white transition-colors">
+                ${Icons.Box} ${t.boxes}
+              </button>
+            </div>
+
+            <div class="bg-white dark:bg-brand p-6 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm space-y-4">
+              <div class="flex items-center justify-between border-b border-zinc-100 dark:border-brand-light pb-2">
+                <div class="flex items-center gap-1.5">
+                  <span class="text-amber-500 text-xs">▲</span>
+                  <h4 class="text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-200">Indicações de Projeto</h4>
+                </div>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand/5 dark:bg-white/10 text-brand-accent dark:text-brand-light">Rev 2.0</span>
+              </div>
+
+              <div class="space-y-3.5 text-xs text-zinc-600 dark:text-zinc-300">
+                <div class="flex gap-2.5 items-start">
+                  <span class="mt-1 w-2 h-2 rounded-full bg-brand-accent shrink-0"></span>
+                  <p><strong class="text-brand dark:text-zinc-100">Earthingbar & Earthing Box:</strong><br/>Para barramento de terra principal com <strong>LUG E97</strong>, usar obrigatoriamente a caixa **E45**.</p>
+                </div>
+                <div class="flex gap-2.5 items-start">
+                  <span class="mt-1 w-2 h-2 rounded-full bg-brand-accent shrink-0"></span>
+                  <p><strong class="text-brand dark:text-zinc-100">Uso da Barra E25:</strong><br/>Utilizar o modelo **E25** de acordo com a necessidade real medida no modelo 3D.</p>
+                </div>
+                <div class="flex gap-2.5 items-start">
+                  <span class="mt-1 w-2 h-2 rounded-full bg-brand-accent shrink-0"></span>
+                  <p><strong class="text-brand dark:text-zinc-100">Camadas (Layers):</strong><br/>Garantir a integridade das camadas originais exigidas pelo Contratante.</p>
+                </div>
+              </div>
+
+              <div class="p-4 rounded-xl border border-dashed border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker space-y-3">
+                <div class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500">Conversor Interativo de Tag para DMS</div>
+                <div class="grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[9px] font-bold text-zinc-400 block mb-1">DMS (6 Dígitos)</label>
+                    <input type="text" id="dms-val-input" value="${state.dmsInput}" oninput="updateDmsTagConversion()" class="w-full bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light px-2 py-1 rounded text-xs font-bold outline-none text-zinc-800 dark:text-white" />
+                  </div>
+                  <div>
+                    <label class="text-[9px] font-bold text-zinc-400 block mb-1">Tag Base (Employer ID)</label>
+                    <input type="text" id="tag-val-input" value="${state.tagInput}" oninput="updateDmsTagConversion()" class="w-full bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light px-2 py-1 rounded text-xs font-mono outline-none text-zinc-800 dark:text-white" />
+                  </div>
+                </div>
+                <div class="pt-2 border-t border-zinc-100 dark:border-brand-light/30">
+                  <span class="text-[9px] font-bold text-zinc-400 block">Resultado Formatado:</span>
+                  <code id="dms-conversion-result" class="text-xs font-bold text-brand-accent dark:text-brand-light break-all block mt-1">BAL.BA11=751&LD041-584420</code>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 flex flex-col space-y-6">
+            <div class="bg-white dark:bg-brand p-6 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm flex flex-col h-full min-h-[300px]">
+              <div class="text-center mb-6">
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-4">${t.result}</span>
+                <div class="text-5xl font-black text-brand dark:text-white tracking-tighter mb-4 flex items-center justify-center gap-2">
+                  <span>${finalTypical}</span>
+                </div>
+                ${finalTypical !== t.noTypical ? `
+                  <button id="hvac-copy-btn" onclick="copyTextToClipboard('${finalTypical}', 'hvac-copy-btn')" class="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-brand-darker border border-zinc-200 dark:border-brand-light text-zinc-700 dark:text-zinc-200 text-xs font-bold hover:opacity-80 active:scale-95 transition-all">
+                    ${Icons.Copy} ${t.copy}
+                  </button>
+                ` : ''}
+              </div>
+
+              ${finalTypical !== t.noTypical ? `
+                <div class="mb-6">
+                  <span class="text-[10px] font-bold uppercase tracking-wider block mb-2 text-zinc-400 dark:text-zinc-500">${t.symbologyTitle}</span>
+                  ${svgHTML}
+                </div>
+              ` : ''}
+
+              ${isEquipment ? `
+                <div class="p-4 rounded-xl border border-emerald-300 bg-emerald-50 dark:bg-emerald-950/40 dark:border-emerald-900/60 text-left space-y-2 mb-4">
+                  <div class="flex items-center gap-1.5 text-xs font-black uppercase text-emerald-800 dark:text-emerald-300">
+                    ▲ DIRETRIZ DE EQUIPAMENTOS
+                  </div>
+                  <div class="space-y-2 leading-relaxed">
+                    <p class="text-xs font-black text-green-700 dark:text-green-400">• PARA EQUIPAMENTO MECÂNICO ELÉTRICO: USAR CABO TYPE G/Y (Verde/Amarelo).</p>
+                    <p class="text-xs font-black text-zinc-700 dark:text-zinc-300">• DEMAIS EQUIPAMENTOS: USAR CABO TYPE B (Preto/Rígido).</p>
+                  </div>
+                </div>
+              ` : ''}
+
+              ${matched ? `
+                <div class="mt-auto flex flex-col gap-3">
+                  ${matched.notes ? `
+                    <div class="p-4 rounded-xl bg-slate-50 dark:bg-brand-darker border border-zinc-200 dark:border-brand-light text-xs font-semibold text-zinc-600 dark:text-zinc-300 leading-relaxed text-left">
+                      <div class="flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-brand-accent dark:text-brand-light mb-1 font-black">
+                        ${Icons.Info} ${t.obsTitle}
+                      </div>
+                      ${matched.notes[state.lang] || matched.notes.pt}
+                    </div>
+                  ` : ''}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('main-container').innerHTML = html;
+      updateDmsTagConversion();
+    }
+
+    function renderTrays() {
+      const t = DICTIONARY[state.lang] || DICTIONARY['pt'];
+      const matched = DB_TRAYS[state.trayDisc][state.trayType];
+
+      let displayTypical = matched.typical;
+      let displayLug = matched.lug;
+      let extraAlertHtml = '';
+      let displayCableNum = '';
+
+      let baseTyp = state.trayEnv === 'Indoor' ? 'E 54' : 'E 56';
+
+      if (state.trayEnv === 'Outdoor') {
+        displayTypical = displayTypical.replace('E 54', 'E 56');
+        if (state.traySpecial === 'none') {
+          displayTypical = "E 143-" + (state.trayType === 'Tray' ? 'D2' : 'D1');
+        }
+        displayCableNum = state.trayDisc === 'Electrical' ? '⑱' : '⑫';
+      }
+
+      if (state.traySpecial === 'jumper') {
+        if (state.trayJumperType === 'comum') {
+          displayTypical = "E 55-D1";
+          displayLug = "E 55";
+          extraAlertHtml = `
+            <div class="my-4 p-4 rounded-xl border border-pink-400 bg-pink-50 dark:bg-[#2d1123] dark:border-[#732555] text-left space-y-2 animate-fadeIn shadow-sm">
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-pink-700 dark:text-pink-400">▲ JUMPER COMUM (PADRÃO)</div>
+              <div class="text-xs font-bold text-pink-800 dark:text-pink-200 leading-relaxed uppercase">
+                TÍPICO ATUALIZADO: <span class="bg-pink-200 dark:bg-pink-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span>
+              </div>
+            </div>
+          `;
+        } else if (state.trayJumperType === 'derivacao') {
+          displayTypical = "E 55-D3";
+          displayLug = "E 55";
+          extraAlertHtml = `
+            <div class="my-4 p-4 rounded-xl border border-green-500 bg-green-50 dark:bg-[#122e1b] dark:border-[#236b3b] text-left space-y-2 animate-fadeIn shadow-sm">
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-green-700 dark:text-green-400">▲ JUMPER DE DERIVAÇÃO (CP)</div>
+              <div class="text-xs font-bold text-green-800 dark:text-green-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-green-200 dark:bg-green-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
+            </div>
+          `;
+        } else if (state.trayJumperType === 'parallel') {
+          displayTypical = "E 55-D5";
+          displayLug = "E 55";
+          extraAlertHtml = `
+            <div class="my-4 p-4 rounded-xl border border-blue-500 bg-blue-50 dark:bg-[#12223a] dark:border-[#234d6b] text-left space-y-2 animate-fadeIn shadow-sm">
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-700 dark:text-blue-400">▲ MAIN PARALLEL WIRE JUMPER</div>
+              <div class="text-xs font-bold text-blue-800 dark:text-blue-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
+            </div>
+          `;
+        }
+      } else if (state.traySpecial === 'main_tray') {
+        displayTypical = "E 55-D1"; 
+        displayLug = "E 55";
+        extraAlertHtml = `
+          <div class="my-4 p-4 rounded-xl border border-blue-400 bg-blue-50 dark:bg-blue-900/40 dark:border-blue-700 text-left space-y-2 animate-fadeIn">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-800 dark:text-blue-300">▲ CONFIGURAÇÃO: MAIN CABLE TRAY</div>
+            <div class="text-xs font-bold text-blue-700 dark:text-blue-300 leading-relaxed uppercase">
+              Mapeado com Sucesso para: <span class="bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span>
+            </div>
+          </div>
+        `;
+      } else if (state.traySpecial === 'cab_16') {
+        displayTypical = "Terminal E97 (BUSBAR)";
+        displayLug = "E 97";
+      } else if (state.traySpecial === 'cab_120') {
+        if (!state.trayE86Modeled) {
+          displayTypical = "HOLD E86";
+          displayLug = "N/A";
+        } else {
+          if (state.trayE86Role === 'parallel') {
+            displayTypical = "E86 + CABO TIPO 24";
+            displayLug = "E 108 (2 furos)";
+          } else {
+            displayTypical = "EARTHING E86";
+            displayLug = "E 08 (1 furo)";
+          }
+        }
+      }
+
+      const cleanLug = displayLug.replace(/\s+/g, '').toUpperCase();
+      let cadLugSymbolMain = '';
+      let lugSymbolSVG = '';
+
+      if (cleanLug.includes('E09')) {
+        cadLugSymbolMain = `<circle cx="262" cy="80" r="12" fill="#22c55e"/>`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><circle cx="20" cy="20" r="14" fill="#22c55e"/></svg> `;
+      } else if (cleanLug.includes('E10') && !cleanLug.includes('108')) {
+        cadLugSymbolMain = `<polygon points="262,64 248,88 276,88" fill="#22c55e"/>`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><polygon points="20,6 6,32 34,32" fill="#22c55e" stroke="#22c55e" stroke-linejoin="round"/></svg>`;
+      } else if (cleanLug.includes('E97')) {
+        cadLugSymbolMain = `<g stroke="currentColor" stroke-width="2" fill="none"><path d="M 248 45 L 248 70 L 258 70 L 258 95 L 270 95 L 270 70 L 280 70 L 280 45" /></g><line x1="258" y1="95" x2="270" y2="95" stroke="#22c55e" stroke-width="3"/><line x1="248" y1="112" x2="280" y2="112" stroke="#22c55e" stroke-width="3"/>`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><g stroke="currentColor" stroke-width="2" fill="none"><path d="M 13 2 L 13 14 L 17 14 L 17 22 L 23 22 L 23 14 L 27 14 L 27 2" /></g></svg>`;
+      } else if (cleanLug.includes('E08')) {
+        cadLugSymbolMain = `<circle cx="265" cy="80" r="6" fill="#22c55e"/>`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><circle cx="20" cy="20" r="8" fill="#22c55e"/></svg>`;
+      } else if (cleanLug.includes('108')) {
+        cadLugSymbolMain = `<circle cx="256" cy="80" r="6" fill="#22c55e"/><line x1="256" y1="80" x2="284" y2="80" stroke="#22c55e" stroke-width="3"/><circle cx="284" cy="80" r="6" fill="#22c55e"/>`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><circle cx="10" cy="20" r="6" fill="#22c55e"/><line x1="10" y1="20" x2="30" y2="20" stroke="#22c55e" stroke-width="4"/><circle cx="30" cy="20" r="6" fill="#22c55e"/></svg>`;
+      } else if (cleanLug.includes('E55')) {
+        cadLugSymbolMain = `<path d="M 250 80 L 265 80 L 265 100 L 290 100" fill="none" stroke="#22c55e" stroke-width="3" />`;
+        lugSymbolSVG = `<svg viewBox="0 0 40 40" class="w-16 h-16 mx-auto"><path d="M 4 14 L 16 14 L 16 26 L 36 26" fill="none" stroke="#22c55e" stroke-width="4" /></svg>`;
+      }
+
+      let html = `
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fadeIn">
+          <div class="lg:col-span-6 space-y-6">
+            <div class="bg-white dark:bg-brand p-6 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm flex flex-col gap-6">
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">1. ${t.env}</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="selectTrayEnv('Indoor')" class="py-2 px-3 rounded-lg text-xs font-bold transition-all border ${state.trayEnv === 'Indoor' ? 'bg-zinc-800 dark:bg-zinc-200 text-white dark:text-brand border-transparent shadow animate-press' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">INDOOR</button>
+                  <button onclick="selectTrayEnv('Outdoor')" class="py-2 px-3 rounded-lg text-xs font-bold transition-all border ${state.trayEnv === 'Outdoor' ? 'bg-zinc-800 dark:bg-zinc-200 text-white dark:text-brand border-transparent shadow animate-press' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">OUTDOOR</button>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">2. Tipo de Suporte</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <button onclick="selectTrayType('Ladder')" class="py-2 px-2 rounded-xl border text-center transition-all ${state.trayType === 'Ladder' ? 'border-brand-accent dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500'}">
+                    <div class="font-black text-sm">LADDER</div><div class="text-[10px]">H &ge; 100mm</div>
+                  </button>
+                  <button onclick="selectTrayType('Tray')" class="py-2 px-2 rounded-xl border text-center transition-all ${state.trayType === 'Tray' ? 'border-brand-accent dark:border-white bg-brand/5 dark:bg-brand-light/30 text-brand dark:text-white' : 'border-zinc-200 dark:border-brand-light text-zinc-400 dark:text-zinc-500'}">
+                    <div class="font-black text-sm">TRAY</div><div class="text-[10px]">H &lt; 100mm</div>
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-2 block">3. Disciplina</span>
+                <div class="grid grid-cols-3 gap-2">
+                  <button onclick="selectTrayDisc('Electrical')" class="py-2 px-1 rounded-md text-[10px] sm:text-xs font-black uppercase transition-all border ${state.trayDisc === 'Electrical' ? 'bg-orange-500 text-white border-orange-500 shadow-md' : 'bg-slate-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'}">ELÉTRICA</button>
+                  <button onclick="selectTrayDisc('Instrumental')" class="py-2 px-1 rounded-md text-[10px] sm:text-xs font-black uppercase transition-all border ${state.trayDisc === 'Instrumental' ? 'bg-blue-500 text-white border-blue-500 shadow-md' : 'bg-slate-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'}">INSTRUMENTAÇÃO</button>
+                  <button onclick="selectTrayDisc('Lighting')" class="py-2 px-1 rounded-md text-[10px] sm:text-xs font-black uppercase transition-all border ${state.trayDisc === 'Lighting' ? 'bg-zinc-500 text-white border-zinc-500 shadow-md' : 'bg-slate-50 dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 text-zinc-500'}">ILUMINAÇÃO</button>
+                </div>
+              </div>
+
+              <div class="mt-2 border-t border-zinc-200 dark:border-brand-light pt-4 animate-fadeIn">
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 mb-3 block">4. Configurações Especiais e Cabos</span>
+                
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <button onclick="setTraySpecial('none')" class="flex-1 min-w-[80px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'none' ? 'bg-zinc-800 dark:bg-zinc-200 text-white dark:text-brand border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Padrão</button>
+                  <button onclick="setTraySpecial('main_tray')" class="flex-1 min-w-[100px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'main_tray' ? 'bg-yellow-500 text-white border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Main Cable</button>
+                  <button onclick="setTraySpecial('jumper')" class="flex-1 min-w-[80px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'jumper' ? 'bg-green-500 text-white border-green-600 shadow-lg scale-[1.02]' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">JUMPER</button>
+                </div>
+                
+                <div class="flex flex-wrap gap-2 mb-3">
+                  <button onclick="setTraySpecial('cab_16')" class="flex-1 min-w-[120px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'cab_16' ? 'bg-amber-500 text-white border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Cabo 16mm²</button>
+                  <button onclick="setTraySpecial('cab_120')" class="flex-1 min-w-[120px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'cab_120' ? 'bg-emerald-600 text-white border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Cabo 120mm² (E86)</button>
+                </div>
+
+                ${state.traySpecial === 'jumper' ? `
+                  <div class="p-4 bg-green-50 dark:bg-[#122e1b] border-2 border-green-300 dark:border-green-800 rounded-xl space-y-3 animate-fadeIn mt-4 shadow-inner">
+                    <div class="flex items-center gap-2 mb-2 text-green-800 dark:text-green-400 font-black uppercase text-xs">Selecione o tipo de Jumper</div>
+                    <div class="grid grid-cols-3 gap-2">
+                      <button onclick="setTrayJumperType('comum')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'comum' ? 'bg-pink-500 text-white border-pink-600 shadow-md' : 'bg-white dark:bg-brand-darker text-pink-600 dark:text-pink-400 border-pink-300 dark:border-pink-800'}">COMUM</button>
+                      <button onclick="setTrayJumperType('derivacao')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'derivacao' ? 'bg-green-500 text-white border-green-600 shadow-md' : 'bg-white dark:bg-brand-darker text-green-600 dark:text-green-400 border-green-300 dark:border-green-800'}">DERIVAÇÃO</button>
+                      <button onclick="setTrayJumperType('parallel')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'parallel' ? 'bg-blue-500 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-brand-darker text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-800'}">PARALLEL</button>
+                    </div>
+                  </div>
+                ` : ''}
+
+                ${state.traySpecial === 'cab_120' ? `
+                  <div class="p-3 bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-900/50 rounded-lg space-y-3 animate-fadeIn mt-3">
+                    <div>
+                      <span class="text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-400 mb-1.5 block">Status do E86 no Modelo 3D</span>
+                      <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setTrayE86(true)" class="py-1.5 rounded text-[10px] font-bold transition-all border ${state.trayE86Modeled ? 'bg-emerald-600 text-white border-transparent' : 'bg-white dark:bg-brand text-zinc-500 border-emerald-200 dark:border-emerald-800'}">Modelado</button>
+                        <button onclick="setTrayE86(false)" class="py-1.5 rounded text-[10px] font-bold transition-all border ${!state.trayE86Modeled ? 'bg-rose-600 text-white border-transparent' : 'bg-white dark:bg-brand text-zinc-500 border-emerald-200 dark:border-emerald-800'}">Não Modelado</button>
+                      </div>
+                    </div>
+                    ${state.trayE86Modeled ? `
+                      <div class="animate-fadeIn">
+                        <span class="text-[9px] font-black uppercase text-emerald-800 dark:text-emerald-400 mb-1.5 block">Tipo de Conexão E86</span>
+                        <div class="grid grid-cols-2 gap-2">
+                          <button onclick="setTrayE86Role('normal')" class="py-1.5 rounded text-[10px] font-bold transition-all border ${state.trayE86Role === 'normal' ? 'bg-emerald-600 text-white border-transparent' : 'bg-white dark:bg-brand text-zinc-500 border-emerald-200 dark:border-emerald-800'}">Padrão ${baseTyp}</button>
+                          <button onclick="setTrayE86Role('parallel')" class="py-1.5 rounded text-[10px] font-bold transition-all border ${state.trayE86Role === 'parallel' ? 'bg-emerald-600 text-white border-transparent' : 'bg-white dark:bg-brand text-zinc-500 border-emerald-200 dark:border-emerald-800'}">Main Parallel Wire</button>
+                        </div>
+                      </div>
+                    ` : ''}
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-6 flex flex-col">
+            <div class="bg-white dark:bg-brand p-6 rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm flex flex-col justify-between h-full min-h-[300px] gap-6">
+              <div class="text-center">
+                <span class="text-[10px] font-black uppercase tracking-widest text-zinc-400 dark:text-zinc-500 block mb-4">${t.result}</span>
+                <div class="text-4xl lg:text-5xl font-black text-brand dark:text-white tracking-tighter mb-4">${displayTypical}</div>
+                <button id="trays-copy-btn" onclick="copyTextToClipboard('${displayTypical}', 'trays-copy-btn')" class="mx-auto flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-100 dark:bg-brand-darker border border-zinc-200 dark:border-brand-light text-zinc-700 dark:text-zinc-200 text-xs font-bold hover:opacity-80 transition-all">${Icons.Copy} Copiar Resultado</button>
+              </div>
+
+              ${extraAlertHtml}
+
+              <div class="my-2">
+                <span class="text-[10px] font-bold uppercase tracking-wider block mb-2 text-zinc-400 dark:text-zinc-500">${t.symbologyTitle} (ESTILO CAD)</span>
+                <div class="relative w-full rounded-xl overflow-hidden border border-zinc-300 dark:border-zinc-700 bg-slate-50 dark:bg-[#0f172a] shadow-inner p-4">
+                  <svg viewBox="0 0 400 160" class="w-full h-auto text-zinc-800 dark:text-zinc-200">
+                    <rect width="100%" height="100%" fill="none"/>
+                    <rect x="50" y="30" width="30" height="100" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <line x1="50" y1="30" x2="80" y2="130" stroke="currentColor" stroke-width="2"/>
+                    <line x1="80" y1="30" x2="50" y2="130" stroke="currentColor" stroke-width="2"/>
+                    <circle cx="65" cy="80" r="6" fill="currentColor"/>
+                    <path d="M 65 80 Q 150 10, 250 80" fill="none" stroke="currentColor" stroke-width="2"/>
+                    ${cadLugSymbolMain}
+                  </svg>
+                </div>
+              </div>
+
+              <div class="grid ${displayCableNum ? 'grid-cols-4' : 'grid-cols-3'} gap-3 min-h-[120px]">
+                ${displayCableNum ? `<div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">CABO</span><span class="text-2xl font-black text-brand dark:text-white">${displayCableNum}</span></div>` : ''}
+                <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">LUG</span><span class="text-sm font-black text-brand dark:text-white">${displayLug}</span></div>
+                <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col items-center justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">SÍMBOLO</span><div class="text-[#22c55e]">${lugSymbolSVG}</div></div>
+                <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Material</span><span class="text-xs font-black text-brand dark:text-white">${state.trayEnv === 'Indoor' ? 'Cobre Estanhado' : 'Aço Inox'}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      document.getElementById('main-container').innerHTML = html;
+    }
+
+    function selectTrayEnv(env) {
+      state.trayEnv = env;
+      renderTrays();
+    }
+
+    function selectTrayType(type) {
+      state.trayType = type;
+      renderTrays();
+    }
+
+    function selectTrayDisc(disc) {
+      state.trayDisc = disc;
+      renderTrays();
+    }
+
+    function setTraySpecial(val) {
+      state.traySpecial = val;
+      if (val === 'jumper') {
+        state.trayJumperType = 'comum'; 
+      }
+      renderTrays();
+    }
+
+    function setTrayJumperType(type) {
+      state.trayJumperType = type;
+      renderTrays();
+    }
+    
+    function setTrayE86(modeled) {
+      state.trayE86Modeled = modeled;
+      renderTrays();
+    }
+    
+    function setTrayE86Role(role) {
+      state.trayE86Role = role;
+      renderTrays();
+    }
+
+    function getEarthingBoxSymbol(id) {
+      const strokeColor = state.darkMode ? '#e4e4e7' : '#18181b';
+      if (id === 'E22²' || id === 'E96 (4)') return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto" fill="none" stroke="${strokeColor}"><rect x="10" y="10" width="60" height="20" stroke-width="2" /><line x1="10" y1="10" x2="70" y2="30" stroke-width="2" /><line x1="10" y1="30" x2="70" y2="10" stroke-width="2" /></svg>`;
+      if (id === 'E45') return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto" fill="none" stroke="${strokeColor}"><rect x="20" y="5" width="40" height="30" stroke-width="2" rx="2" /><circle cx="40" cy="20" r="6" fill="#10b981" /></svg>`;
+      return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto"></svg>`;
+    }
+
+    function renderEarthingBoxesTable() {
+      document.getElementById('earthing-boxes-tbody').innerHTML = EARTHING_BOXES.map(box => `
+        <tr class="bg-white dark:bg-brand hover:bg-slate-50 dark:hover:bg-brand-light/20 transition-colors">
+          <td class="p-3 border border-zinc-200 dark:border-brand-light font-black text-brand dark:text-white">${box.id}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light">${getEarthingBoxSymbol(box.id)}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light text-center">${box.page}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light font-semibold">${box.dwg}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light font-medium text-[10px] uppercase">${box.desc}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderModalContents() {
+      const t = DICTIONARY[state.lang] || DICTIONARY['pt'];
+      const textCol = state.darkMode ? '#f4f4f5' : '#18181b';
+      
+      document.getElementById('modal-iso-body').innerHTML = `
+        <div class="space-y-8 text-xs text-zinc-700 dark:text-zinc-300">
+          
+          <!-- SEÇÃO 1: FORMATOS E MARGENS -->
+          <section class="space-y-3">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              1. Formatos de Papel e Margens (ISO 216 / ISO 5457)
+            </h3>
+            <p class="leading-relaxed">A padronização das margens garante a legibilidade mesmo após o arquivamento físico em pastas de projetos.</p>
+            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead class="bg-slate-100 dark:bg-brand-darker font-bold">
+                  <tr>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Formato ISO</th>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Dimensões Úteis (mm)</th>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Margem Esquerda (mm)</th>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Outras Margens (mm)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-black">A0</td>
+                    <td class="p-2.5 font-mono">841 × 1189</td>
+                    <td class="p-2.5 font-bold">25 mm (Furação)</td>
+                    <td class="p-2.5">10 mm</td>
+                  </tr>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-black">A1</td>
+                    <td class="p-2.5 font-mono">594 × 841</td>
+                    <td class="p-2.5 font-bold">25 mm (Furação)</td>
+                    <td class="p-2.5">10 mm</td>
+                  </tr>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-black">A2</td>
+                    <td class="p-2.5 font-mono">420 × 594</td>
+                    <td class="p-2.5 font-bold">25 mm (Furação)</td>
+                    <td class="p-2.5">10 mm</td>
+                  </tr>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-black">A3</td>
+                    <td class="p-2.5 font-mono">297 × 420</td>
+                    <td class="p-2.5 font-bold">25 mm (Furação)</td>
+                    <td class="p-2.5">10 mm</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-black">A4</td>
+                    <td class="p-2.5 font-mono">210 × 297</td>
+                    <td class="p-2.5 font-bold">25 mm (Furação)</td>
+                    <td class="p-2.5">5 mm</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- SEÇÃO 2: TIPOS DE LINHA - ISO 128 -->
+          <section class="space-y-4">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              2. Tipos de Linhas e Grafia Normatizada (ISO 128)
+            </h3>
+            <p class="leading-relaxed">A correta espessura e estruturação das linhas é o pilar mais importante do desenho técnico, ditando o que é contorno real, representação oculta ou referência geométrica auxiliar.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <!-- LINHA CONTÍNUA LARGA -->
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">A. Contínuo Largo (0.5 - 0.7 mm)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-brand text-white dark:bg-brand-light">TIPO A</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-2 rounded-lg border border-zinc-200 dark:border-brand-light">
+                  <svg class="w-full h-6 text-zinc-900 dark:text-white" viewBox="0 0 200 10">
+                    <line x1="5" y1="5" x2="195" y2="5" stroke="currentColor" stroke-width="4.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase"><strong class="text-zinc-700 dark:text-zinc-300">Aplicação:</strong> Contornos visíveis, arestas visíveis, limites de peças e carcaças de dutos/equipamentos.</p>
+              </div>
+
+              <!-- LINHA CONTÍNUA ESTREITA -->
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">B. Contínuo Estreito (0.25 - 0.35 mm)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-zinc-200 text-zinc-700 dark:bg-brand-light/40 dark:text-zinc-300">TIPO B</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-2 rounded-lg border border-zinc-200 dark:border-brand-light">
+                  <svg class="w-full h-6 text-zinc-900 dark:text-white" viewBox="0 0 200 10">
+                    <line x1="5" y1="5" x2="195" y2="5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase"><strong class="text-zinc-700 dark:text-zinc-300">Aplicação:</strong> Linhas de cota, linhas de chamada, hachuras, linhas de centro curtas e roscas de parafusos.</p>
+              </div>
+
+              <!-- LINHA TRACEJADA ESTREITA -->
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">E. Tracejado Estreito (0.25 - 0.35 mm)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-zinc-200 text-zinc-700 dark:bg-brand-light/40 dark:text-zinc-300">TIPO E</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-2 rounded-lg border border-zinc-200 dark:border-brand-light">
+                  <svg class="w-full h-6 text-zinc-900 dark:text-white" viewBox="0 0 200 10">
+                    <line x1="5" y1="5" x2="195" y2="5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase"><strong class="text-zinc-700 dark:text-zinc-300">Aplicação:</strong> Arestas invisíveis, contornos não visíveis de dutos de ar e elementos ocultados por isolamento.</p>
+              </div>
+
+              <!-- LINHA TRAÇO-E-PONTO ESTREITO -->
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">G. Traço e Ponto Fino (0.25 - 0.35 mm)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-zinc-200 text-zinc-700 dark:bg-brand-light/40 dark:text-zinc-300">TIPO G</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-2 rounded-lg border border-zinc-200 dark:border-brand-light">
+                  <svg class="w-full h-6 text-zinc-900 dark:text-white" viewBox="0 0 200 10">
+                    <line x1="5" y1="5" x2="195" y2="5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="16 4 2 4" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase"><strong class="text-zinc-700 dark:text-zinc-300">Aplicação:</strong> Linhas de centro de furos de aterramento, eixos de simetria de dutos e trajetórias estruturais.</p>
+              </div>
+
+              <!-- LINHA DE PLANO DE CORTE -->
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2 md:col-span-2">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">H. Plano de Corte (Estreito, Largo nas Extremidades e Desvios)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-rose-500 text-white">TIPO H</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-2 rounded-lg border border-zinc-200 dark:border-brand-light">
+                  <svg class="w-full h-6 text-zinc-900 dark:text-white" viewBox="0 0 200 10">
+                    <path d="M 5 5 L 25 5 M 25 5 L 175 5 M 175 5 L 195 5" stroke="currentColor" stroke-width="1.5" stroke-dasharray="16 4 2 4" />
+                    <line x1="5" y1="5" x2="25" y2="5" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" />
+                    <line x1="175" y1="5" x2="195" y2="5" stroke="currentColor" stroke-width="4.5" stroke-linecap="round" />
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase"><strong class="text-zinc-700 dark:text-zinc-300">Aplicação:</strong> Indicação da trajetória de planos de corte e vistas seccionais (como os detalhes de jumpers de aterramento).</p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SEÇÃO 3: QUALIDADE ESTÉTICA E DIRETRIZES DE SUCESSO -->
+          <section class="space-y-4">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              3. Como Deixar o Desenho Limpo e Legível (Critérios de Qualidade)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              
+              <!-- REGRAS DE COTAGEM -->
+              <div class="p-4 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-slate-50/30 dark:bg-brand-darker/20 space-y-2">
+                <span class="text-xs font-black text-amber-500 uppercase tracking-widest block">▲ Regras de Cotagem (ISO 129-1)</span>
+                <ul class="space-y-1.5 text-[10px] leading-relaxed uppercase font-semibold text-zinc-600 dark:text-zinc-400">
+                  <li>• A primeira linha de cota deve estar afastada no mínimo 10mm do contorno do objeto.</li>
+                  <li>• Linhas de cota paralelas subsequentes devem manter espaçamento de no mínimo 7mm entre si.</li>
+                  <li>• Nunca cruzar linhas de cota. Coloque sempre as cotas menores mais internas e as maiores externamente.</li>
+                </ul>
+              </div>
+
+              <!-- CALIGRAFIA TÉCNICA -->
+              <div class="p-4 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-slate-50/30 dark:bg-brand-darker/20 space-y-2">
+                <span class="text-xs font-black text-amber-500 uppercase tracking-widest block">▲ Fontes e Textos (ISO 3098)</span>
+                <ul class="space-y-1.5 text-[10px] leading-relaxed uppercase font-semibold text-zinc-600 dark:text-zinc-400">
+                  <li>• Alturas de textos normatizadas para projetos mecânicos/detalhamento: 2.5mm, 3.5mm, 5.0mm, 7.0mm.</li>
+                  <li>• Nunca sobrepor textos ou tags sobre linhas de desenho ou hachuras (use máscaras/wipeout ou desloque a tag).</li>
+                  <li>• Utilizar caligrafia vertical ou inclinada a 15° para a direita, com fontes limpas como Arial Narrow ou ISO CT.</li>
+                </ul>
+              </div>
+
+              <!-- HIERARQUIA VISUAL -->
+              <div class="p-4 rounded-xl border border-dashed border-zinc-300 dark:border-zinc-700 bg-slate-50/30 dark:bg-brand-darker/20 space-y-2">
+                <span class="text-xs font-black text-amber-500 uppercase tracking-widest block">▲ Limpeza de Hachuras e Centros</span>
+                <ul class="space-y-1.5 text-[10px] leading-relaxed uppercase font-semibold text-zinc-600 dark:text-zinc-400">
+                  <li>• Hachuras não devem obstruir a legibilidade de textos de dimensionamento. Romper a hachura onde há texto.</li>
+                  <li>• O cruzamento de linhas de centro deve possuir interseção nos traços cheios do traço-e-ponto, nunca no vazio.</li>
+                  <li>• As linhas de centro de furos de terra ou dutos circulares devem ultrapassar de 2mm a 5mm o limite da peça.</li>
+                </ul>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SEÇÃO 4: METÓDO DE PROJEÇÃO -->
+          <section class="space-y-4">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              4. Simbologia de Métodos de Projeção (ISO 5456-2)
+            </h3>
+            <p class="leading-relaxed">Sempre declare o método de projeção utilizado no carimbo ou próximo a ele para garantir a correta interpretação das vistas ortogonais no campo.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              
+              <!-- 1º DIEDRO -->
+              <div class="p-4 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">Projeção no 1º Diedro (Padrão ISO/ABNT)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">COMUM NO BRASIL</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-4 rounded-lg border border-zinc-200 dark:border-brand-light flex justify-center">
+                  <svg class="w-48 h-16 text-zinc-800 dark:text-zinc-200" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <circle cx="20" cy="20" r="14" stroke-dasharray="16 4 2 4" stroke-width="1" />
+                    <circle cx="20" cy="20" r="14" />
+                    <circle cx="20" cy="20" r="8" />
+                    <line x1="2" y1="20" x2="38" y2="20" stroke-dasharray="8 4" stroke-width="0.8" />
+                    <line x1="20" y1="2" x2="20" y2="38" stroke-dasharray="8 4" stroke-width="0.8" />
+                    <path d="M 60 14 L 60 26 L 90 32 L 90 8 Z" />
+                    <line x1="52" y1="20" x2="98" y2="20" stroke-dasharray="8 4" stroke-width="0.8" />
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase">A vista da lateral esquerda é colocada no lado direito do desenho principal.</p>
+              </div>
+
+              <!-- 3º DIEDRO -->
+              <div class="p-4 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-3">
+                <div class="flex justify-between items-center">
+                  <span class="font-black text-xs text-brand dark:text-white uppercase">Projeção no 3º Diedro (Padrão ANSI)</span>
+                  <span class="px-2 py-0.5 rounded text-[9px] font-black bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">EUA / CANADÁ</span>
+                </div>
+                <div class="bg-white dark:bg-brand-darker p-4 rounded-lg border border-zinc-200 dark:border-brand-light flex justify-center">
+                  <svg class="w-48 h-16 text-zinc-800 dark:text-zinc-200" viewBox="0 0 120 40" fill="none" stroke="currentColor" stroke-width="1.5">
+                    <path d="M 30 8 L 30 32 L 60 26 L 60 14 Z" />
+                    <line x1="22" y1="20" x2="68" y2="20" stroke-dasharray="8 4" stroke-width="0.8" />
+                    <circle cx="95" cy="20" r="14" stroke-dasharray="16 4 2 4" stroke-width="1" />
+                    <circle cx="95" cy="20" r="14" />
+                    <circle cx="95" cy="20" r="8" />
+                    <line x1="77" y1="20" x2="113" y2="20" stroke-dasharray="8 4" stroke-width="0.8" />
+                    <line x1="95" y1="2" x2="95" y2="38" stroke-dasharray="8 4" stroke-width="0.8" />
+                  </svg>
+                </div>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase">A vista da lateral esquerda é colocada no lado esquerdo do desenho principal.</p>
+              </div>
+
+            </div>
+          </section>
+
+        </div>
+      `;
+
+      document.getElementById('modal-cortes-body').innerHTML = `
+        <div class="space-y-8 text-xs text-zinc-700 dark:text-zinc-300">
+          
+          <!-- SEÇÃO 1: ANATOMIA DA LINHA DE CORTE -->
+          <section class="space-y-3">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              1. Anatomia Normatizada da Linha de Corte (ISO 128-30)
+            </h3>
+            <p class="leading-relaxed">
+              A indicação de um plano de corte requer uma grafia técnica estrita. O observador deve saber com precisão o caminho geométrico percorrido pelo corte, a direção do olhar e o código identificador.
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <span class="font-black text-[11px] text-zinc-800 dark:text-white uppercase block">A. Linha do Plano de Corte</span>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase">
+                  A linha é desenhada com traço-e-ponto fino (<span class="font-bold">0.25mm - Tipo G</span>), porém com as extremidades e quaisquer mudanças de direção desenhadas com traço largo (<span class="font-bold">0.7mm - Tipo H</span>). Isso destaca onde o plano entra e sai do objeto sem obstruir os detalhes internos.
+                </p>
+              </div>
+              <div class="p-3.5 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <span class="font-black text-[11px] text-zinc-800 dark:text-white uppercase block">B. Direção do Olhar (Setas)</span>
+                <p class="text-[10px] text-zinc-500 leading-relaxed uppercase">
+                  As setas de indicação do sentido de observação devem ser desenhadas tocando a parte larga da linha de corte, apontando para a direção do olhar do observador. Elas formam um ângulo de 30° na ponta e são posicionadas perpendicularmente à linha do plano.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- SEÇÃO 2: EXEMPLO GRÁFICO (VETORES) -->
+          <section class="space-y-4">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              2. Exemplo Gráfico de Indicação e Seção Seccionada
+            </h3>
+            <div class="bg-white dark:bg-brand-darker rounded-xl border border-zinc-200 dark:border-brand-light p-4 shadow-sm space-y-4">
+              <div class="text-[10px] font-black uppercase text-zinc-400 dark:text-zinc-500 tracking-wider">Esquema Técnico de Aplicação: Planta vs. Detalhe de Corte</div>
+              
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- VISTA DE ORIGEM (PLANTA) -->
+                <div class="space-y-2">
+                  <div class="text-[10px] font-bold text-center uppercase tracking-wider text-zinc-500 dark:text-zinc-400">A. Vista de Origem com Plano de Corte</div>
+                  <div class="bg-slate-50 dark:bg-brand-darker/80 p-3 rounded-lg border border-zinc-200 dark:border-brand-light flex justify-center items-center">
+                    <svg class="w-full max-w-[280px] h-auto text-zinc-800 dark:text-zinc-200" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <!-- Corpo principal da peça -->
+                      <rect x="30" y="30" width="140" height="60" fill="none" stroke="currentColor" stroke-width="1.5" />
+                      <!-- Flanges internos ocultos -->
+                      <rect x="50" y="25" width="20" height="70" fill="none" stroke="currentColor" stroke-dasharray="3 2" />
+                      <!-- Furo central do terra -->
+                      <circle cx="100" cy="60" r="15" fill="none" stroke="currentColor" stroke-width="1.5" />
+                      <!-- Linha de Corte A-A -->
+                      <!-- Partes finas centrais -->
+                      <line x1="45" y1="60" x2="155" y2="60" stroke="currentColor" stroke-width="1" stroke-dasharray="10 3 2 3" />
+                      <!-- Extremidades grossas -->
+                      <line x1="20" y1="60" x2="45" y2="60" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" />
+                      <line x1="155" y1="60" x2="180" y2="60" stroke="currentColor" stroke-width="3.5" stroke-linecap="square" />
+                      <!-- Setas apontando para cima (direção do corte) -->
+                      <path d="M 25 60 L 25 45 M 22 48 L 25 45 L 28 48" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" fill="none" />
+                      <path d="M 175 60 L 175 45 M 172 48 L 175 45 L 178 48" stroke="currentColor" stroke-width="2" stroke-linejoin="miter" fill="none" />
+                      <!-- Identificações A -->
+                      <text x="21" y="35" fill="currentColor" font-size="12" font-weight="900" font-family="sans-serif">A</text>
+                      <text x="171" y="35" fill="currentColor" font-size="12" font-weight="900" font-family="sans-serif">A</text>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- SEÇÃO CORTADA -->
+                <div class="space-y-2">
+                  <div class="text-[10px] font-bold text-center uppercase tracking-wider text-zinc-500 dark:text-zinc-400">B. Vista Seccionada Resultante</div>
+                  <div class="bg-slate-50 dark:bg-brand-darker/80 p-3 rounded-lg border border-zinc-200 dark:border-brand-light flex justify-center items-center">
+                    <svg class="w-full max-w-[280px] h-auto text-zinc-800 dark:text-zinc-200" viewBox="0 0 200 120" fill="none" stroke="currentColor" stroke-width="1.5">
+                      <!-- Duto cortado com espessura maior -->
+                      <rect x="35" y="30" width="130" height="60" fill="none" stroke="currentColor" stroke-width="2" />
+                      <!-- Linha de centro fina -->
+                      <line x1="30" y1="60" x2="170" y2="60" stroke="currentColor" stroke-width="0.8" stroke-dasharray="12 4 2 4" />
+                      
+                      <!-- Padrão de hachura a 45° -->
+                      <g stroke="currentColor" stroke-width="0.8" opacity="0.6">
+                        <!-- Seção Superior Cortada -->
+                        <line x1="40" y1="30" x2="60" y2="50" />
+                        <line x1="60" y1="30" x2="80" y2="50" />
+                        <line x1="80" y1="30" x2="100" y2="50" />
+                        <line x1="100" y1="30" x2="120" y2="50" />
+                        <line x1="120" y1="30" x2="140" y2="50" />
+                        <line x1="140" y1="30" x2="160" y2="50" />
+                        <!-- Seção Inferior Cortada -->
+                        <line x1="40" y1="70" x2="60" y2="90" />
+                        <line x1="60" y1="70" x2="80" y2="90" />
+                        <line x1="80" y1="70" x2="100" y2="90" />
+                        <line x1="100" y1="70" x2="120" y2="90" />
+                        <line x1="120" y1="70" x2="140" y2="90" />
+                        <line x1="140" y1="70" x2="160" y2="90" />
+                      </g>
+
+                      <!-- Parede interna do cilindro oco (não cortada, logo não hachurada) -->
+                      <line x1="35" y1="50" x2="165" y2="50" stroke="currentColor" stroke-width="1.5" />
+                      <line x1="35" y1="70" x2="165" y2="70" stroke="currentColor" stroke-width="1.5" />
+
+                      <!-- Texto de identificação do Corte de acordo com a escala local -->
+                      <text x="100" y="112" fill="currentColor" font-size="10" font-weight="900" font-family="sans-serif" text-anchor="middle">CORTE A-A (ESCALA 1:5)</text>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- SEÇÃO 3: REGRAS DE HACHURAMENTO -->
+          <section class="space-y-4">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              3. Regras Cruciais de Hachuramento Técnico (ISO 128-50)
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <div class="p-4 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <span class="text-xs font-black text-brand dark:text-brand-accent uppercase tracking-wider block">✔ Alinhamento e Direção</span>
+                <p class="text-[11px] text-zinc-500 leading-relaxed uppercase">
+                  As hachuras devem ser traçadas com linhas finas contínuas inclinadas a 45° em relação às linhas de contorno ou aos eixos principais de simetria do objeto. Se a peça possuir inclinação natural a 45°, as hachuras devem ser traçadas a 30° ou 60° para evitar paralelismo.
+                </p>
+              </div>
+
+              <div class="p-4 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
+                <span class="text-xs font-black text-rose-500 uppercase tracking-wider block">✘ O que Nunca se Hachura?</span>
+                <p class="text-[11px] text-zinc-500 leading-relaxed uppercase">
+                  Elementos metálicos maciços cortados longitudinalmente <span class="text-rose-600 dark:text-rose-400 font-bold">NÃO SOFREM HACHURA</span>. Isso inclui: eixos, pinos de terra, chavetas, parafusos, rebites, arruelas, dentes de engrenagem, porcas e nervuras estruturais de reforço. Hachurá-los induz ao erro de considerá-los vazados/ocos.
+                </p>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- SEÇÃO 4: ESCALAS E IDENTIFICAÇÃO -->
+          <section class="space-y-3">
+            <h3 class="text-sm font-black text-brand dark:text-brand-accent uppercase tracking-wider flex items-center gap-1.5 border-b border-zinc-200 dark:border-brand-light pb-1">
+              <span class="w-1.5 h-3 bg-brand dark:bg-brand-accent rounded-sm"></span>
+              4. Textos, Legibilidade e Padronização de Escalas (ISO 129-1 / ISO 3098)
+            </h3>
+            <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-brand-light shadow-sm">
+              <table class="w-full text-left border-collapse text-xs">
+                <thead class="bg-slate-100 dark:bg-brand-darker font-bold">
+                  <tr>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Item do Desenho</th>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Regra de Grafia / Tamanho</th>
+                    <th class="p-2.5 border-b border-zinc-200 dark:border-brand-light">Exemplo Recomendado</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-bold">Identificação do Corte</td>
+                    <td class="p-2.5">Textos em caixa alta, tamanho mínimo <span class="font-bold">5.0mm</span>, em Arial Narrow ou ISO CT, centralizado logo abaixo do corte correspondente.</td>
+                    <td class="p-2.5 font-mono text-brand-accent dark:text-brand-light font-bold">CORTE A-A</td>
+                  </tr>
+                  <tr class="border-b border-zinc-100 dark:border-brand-light/30">
+                    <td class="p-2.5 font-bold">Escala Local do Detalhe</td>
+                    <td class="p-2.5">Se o corte diferir da escala principal declarada na legenda/carimbo geral, deve-se explicitar a escala local em tamanho <span class="font-bold">3.5mm</span>.</td>
+                    <td class="p-2.5 font-mono text-brand-accent dark:text-brand-light font-bold">ESCALA 1:5</td>
+                  </tr>
+                  <tr>
+                    <td class="p-2.5 font-bold">Sufixos e Referências Cruzadas</td>
+                    <td class="p-2.5">Para cortes que aparecem em outras folhas do book de desenhos, referenciar as coordenadas da folha de origem e destino na linha de chamada.</td>
+                    <td class="p-2.5 font-mono text-brand-accent dark:text-brand-light font-bold">VER FOLHA 02</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+        </div>
+      `;
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
