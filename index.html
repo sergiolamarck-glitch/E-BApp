@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head><link rel="icon" type="image/x-icon" href="/assets/images/favicon.ico">
-
+<html lang="pt-BR" class="scroll-smooth">
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistema Integrado de Engenharia (CQ, HVAC, Bandejas)</title>
   
+  <!-- Ícone do App -->
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
   <script src="https://cdn.tailwindcss.com"></script>
 
   <script>
@@ -20,6 +22,16 @@
               light: '#003e57',   // Bordas e destaques no dark
               accent: '#005a7d',  // Elementos ativos
               subtle: '#e6eaed'   // Fundo de destaque no light mode
+            }
+          },
+          animation: {
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'fadeIn': 'fadeIn 0.25s ease-out forwards'
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0', transform: 'translateY(4px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' }
             }
           }
         }
@@ -53,7 +65,7 @@
         <div>
           <div class="flex items-center gap-1.5">
             <h1 id="header-title" class="text-base font-black tracking-tight text-brand dark:text-white">Engenharia & Qualidade</h1>
-            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-900">▲ REV 2.0</span>
+            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-900 animate-pulse font-sans">▲ REV 2.1</span>
           </div>
           <p id="header-subtitle" class="text-[10px] font-bold uppercase tracking-widest text-zinc-400 dark:text-brand-light">Painel Integrado: CQ, HVAC, Piping e Bandejas</p>
         </div>
@@ -92,12 +104,14 @@
     </div>
   </header>
 
+  <!-- Menu Mobile de Abas -->
   <div class="lg:hidden no-print bg-white dark:bg-brand border-b border-zinc-200 dark:border-brand-light p-2 flex justify-center gap-2 overflow-x-auto">
     <button id="tab-cq-btn-mob" onclick="switchTab('cq')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">Checklist</button>
-    <button id="tab-hvac-btn-mob" onclick="switchTab('hvac')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2 font-bold">HVAC</button>
+    <button id="tab-hvac-btn-mob" onclick="switchTab('hvac')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">HVAC</button>
     <button id="tab-bandejas-btn-mob" onclick="switchTab('bandejas')" class="px-4 py-2 rounded-md text-xs font-bold transition-all flex items-center gap-2">Trays</button>
   </div>
 
+  <!-- CONTAINER CENTRAL -->
   <main id="main-container" class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
   </main>
 
@@ -105,6 +119,7 @@
     Engenharia de Detalhamento • Documentação Padrão Unificada © 2026
   </footer>
 
+  <!-- MODAL DIRETRIZES ISO -->
   <div id="modal-iso" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
     <div class="relative w-full max-w-4xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
       <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
@@ -117,6 +132,7 @@
     </div>
   </div>
 
+  <!-- MODAL CORTES -->
   <div id="modal-cortes" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
     <div class="relative w-full max-w-5xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
       <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
@@ -129,6 +145,7 @@
     </div>
   </div>
 
+  <!-- MODAL CAIXAS DE ATERRAMENTO -->
   <div id="modal-boxes" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/70 backdrop-blur-sm no-print transition-all">
     <div class="relative w-full max-w-4xl max-h-[90vh] rounded-xl shadow-2xl flex flex-col bg-white dark:bg-brand border border-zinc-200 dark:border-brand-light">
       <div class="flex items-center justify-between px-6 py-4 border-b border-zinc-200 dark:border-brand-light bg-slate-50 dark:bg-brand-darker rounded-t-xl">
@@ -157,17 +174,17 @@
   </div>
 
   <script>
+    // Banco de Dados Atualizado com as informações da Tabela da Imagem
     const EARTHING_BOXES = [
-      { id: 'E45', page: '01', dwg: '3D-EB-E45-001', desc: 'Caixa de aterramento padrão para Earthingbar (Barramento de Distribuição de Terra)' },
-      { id: 'E15', page: '02', dwg: '3D-EB-E15-002', desc: 'Ponto de teste / medição direta para malha principal subterrânea' },
-      { id: 'E22²', page: '03', dwg: '3D-EB-E22-003', desc: 'Barramento de terra reforçado tipo 2 de seção estendida' },
-      { id: 'E23³', page: '04', dwg: '3D-EB-E23-004', desc: 'Barramento de terra triangular tipo 3 de alta capacidade' },
-      { id: 'E30', page: '05', dwg: '3D-EB-E30-005', desc: 'Barra de terra simples para ancoragem rápida em estruturas' },
-      { id: 'E31 ( 2 furos)', page: '06', dwg: '3D-EB-E31-006', desc: 'Barra compacta com furação dupla para duplo jumper' },
-      { id: 'E31 ( 4 furos)', page: '07', dwg: '3D-EB-E31-007', desc: 'Barra de terra múltipla de 4 conexões simultâneas' },
-      { id: 'E32', page: '08', dwg: '3D-EB-E32-008', desc: 'Caixa de junção de blindagem hermética IP65' },
-      { id: 'E38', page: '09', dwg: '3D-EB-E38-009', desc: 'Conexão cruzada tipo T de distribuição equipotencial' },
-      { id: 'E96 (4)', page: '10', dwg: '3D-EB-E96-010', desc: 'Barramento compacto modular de terra geral' }
+      { id: 'E22²', page: '14', dwg: '120033-012', desc: 'EARTHING COPPER BAR 300X40 mm EARTHING STAINLESS STEEL BAR 300x50 mm' },
+      { id: 'E23³', page: '15', dwg: '120033-013', desc: 'L70x70x7 mm FOR 1 COMPRESSION CABLE LUG FOR WALL WITH INSULATION' },
+      { id: 'E15', page: '12', dwg: '120033-010', desc: 'EARTHING COPPER BAR 300X40 mm EARTHING STAINLESS STEEL BAR 300x50 mm' },
+      { id: 'E32', page: '18', dwg: '120033-016', desc: 'EARTHING COPPER BAR 300X40 mm FOR WALLS WITH INSULATION' },
+      { id: 'E30', page: '18', dwg: '120033-016', desc: 'L70x70x7 mm FOR 1 COMPRESSION CABLE LUG FOR WALL WITH INSULATION' },
+      { id: 'E31 ( 4 furos)', page: '67', dwg: '120033-065', desc: 'L70x70x7 mm FOR 1 COMPRESSION CABLE LUG (4HOLES) FOR WALL WITH INSULATION' },
+      { id: 'E31 ( 2 furos)', page: '67', dwg: '120033-065', desc: 'L70x70x7 mm FOR 1 COMPRESSION CABLE LUG (2 HOLES) FOR WALL WITH INSULATION' },
+      { id: 'E38', page: '22', dwg: '120033-020', desc: 'L70x70x7 mm FOR 1 COMPRESSION CABLE LUG FOR WALL WITH INSULATION' },
+      { id: 'E96', displayName: 'E96 (4) <br><span class="text-rose-500 font-bold tracking-tight text-[9px]">(APENAS SALAS GIS de 66 kV 1/2)</span>', page: '15', dwg: '120033-013', desc: 'EARTHING COPPER BAR 300X40 mm EARTHING STAINLESS STEEL BAR 300x50 mm' }
     ];
 
     const state = {
@@ -422,7 +439,7 @@
         svgEquipTitle: "Puesta a Tierra de Continuidad",
         svgEquipDesc: "Cable de cobre flexible de 16mm²",
         svgE53DTitle: "PUESTA A TIERRA DE EQUIPO (E53D)",
-        svgE53DFrame: "Carcasa del Equipo / Caja",
+        svgE53DFrame: "Carcasa del Equipo / Caixa",
         svgE53DStud: "Perno de Tierra M10/M12",
         svgE53DWarning: "Fijar diretamente en la carcasa metálica limpia",
         env: "Ambiente",
@@ -560,7 +577,7 @@
       },
       {
         type: 'internal',
-        category: { pt: "Área de Execução do Desenho (Viewports)", en: "Drawing Area (Viewports)", es: "Área de Ejecución (Viewports)", hi: "ड्राइंग क्षेत्र (व्यूपोर्टส์)" },
+        category: { pt: "Área de Execução do Desenho (Viewports)", en: "Drawing Area (Viewports)", es: "Área de Ejecución (Viewports)", hi: "ड्रائंग क्षेत्र (व्यूपोर्टส์)" },
         items: [
           { id: "vwp1", text: "Orientação do norte na direção correta?", tag: "Norte", tagImportant: "CRÍTICO" },
           { id: "vwp2", text: "Escala da viewport de acordo com a escala denominada no carimbo?", tag: "Escala" },
@@ -830,7 +847,7 @@
                             </span>
                           ` : ''}
                           ${item.tagImportant ? `
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold print-border print-text-black ${isDone ? 'bg-zinc-100 text-zinc-400 dark:bg-brand-darker dark:text-zinc-600' : 'bg-amber-100 text-amber-700 dark:bg-rose-950/60 dark:text-rose-300'}">
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold print-border print-text-black ${isDone ? 'bg-zinc-100 text-zinc-400 dark:bg-brand-darker dark:text-zinc-500' : 'bg-amber-100 text-amber-700 dark:bg-rose-950/60 dark:text-rose-300'}">
                               ${item.tagImportant}
                             </span>
                           ` : ''}
@@ -1004,7 +1021,7 @@
               <rect x="171" y="114" width="18" height="12" fill="#d97706" rx="1" />
               <text x="245" y="105" fill="${textColor}" font-size="11" font-weight="600">${t.svgE53DStud}</text>
               <text x="245" y="120" fill="#10b981" font-size="10" font-weight="600">${t.svgEarthCable}</text>
-              <text x="20" y="200" fill="#ef4444" font-size="9" font-weight="500">${t.svgE53DWarning}</text>
+              <text x="20" y="200" fill="#ef4444" font-size="9" font-weight="500" class="animate-pulse">${t.svgE53DWarning}</text>
             </svg>
           `;
         } else if (code.includes('E51A') || code.includes('E53A')) {
@@ -1143,7 +1160,7 @@
                   <span class="text-amber-500 text-xs">▲</span>
                   <h4 class="text-xs font-black uppercase tracking-wider text-zinc-700 dark:text-zinc-200">Indicações de Projeto</h4>
                 </div>
-                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand/5 dark:bg-white/10 text-brand-accent dark:text-brand-light">Rev 2.0</span>
+                <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand/5 dark:bg-white/10 text-brand-accent dark:text-brand-light">Rev 2.1</span>
               </div>
 
               <div class="space-y-3.5 text-xs text-zinc-600 dark:text-zinc-300">
@@ -1243,6 +1260,14 @@
       let extraAlertHtml = '';
       let displayCableNum = '';
 
+      if (state.trayDisc === 'Electrical') {
+        displayCableNum = '⑱'; // Cabo 18 (Electrical)
+      } else if (state.trayDisc === 'Instrumental') {
+        displayCableNum = '⑫'; // Cabo 12 (Tele/Instrumental)
+      } else if (state.trayDisc === 'Lighting') {
+        displayCableNum = '①';  // Cabo 1 (Lighting)
+      }
+
       let baseTyp = state.trayEnv === 'Indoor' ? 'E 54' : 'E 56';
 
       if (state.trayEnv === 'Outdoor') {
@@ -1250,7 +1275,6 @@
         if (state.traySpecial === 'none') {
           displayTypical = "E 143-" + (state.trayType === 'Tray' ? 'D2' : 'D1');
         }
-        displayCableNum = state.trayDisc === 'Electrical' ? '⑱' : '⑫';
       }
 
       if (state.traySpecial === 'jumper') {
@@ -1280,7 +1304,7 @@
           extraAlertHtml = `
             <div class="my-4 p-4 rounded-xl border border-blue-500 bg-blue-50 dark:bg-[#12223a] dark:border-[#234d6b] text-left space-y-2 animate-fadeIn shadow-sm">
               <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-700 dark:text-blue-400">▲ MAIN PARALLEL WIRE JUMPER</div>
-              <div class="text-xs font-bold text-blue-800 dark:text-blue-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
+              <div class="text-xs font-bold text-blue-800 dark:text-blue-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-green-200 dark:bg-green-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
             </div>
           `;
         }
@@ -1415,6 +1439,10 @@
                     ` : ''}
                   </div>
                 ` : ''}
+
+                <button onclick="openModal('modal-boxes')" class="mt-4 w-full py-3 rounded-lg border border-brand-accent dark:border-brand-light bg-brand-subtle dark:bg-brand-light/20 text-brand dark:text-white text-xs font-black uppercase tracking-widest flex justify-center items-center gap-2 hover:bg-brand-accent hover:text-white transition-colors">
+                  ${Icons.Box} ${t.boxes}
+                </button>
               </div>
             </div>
           </div>
@@ -1445,7 +1473,7 @@
               </div>
 
               <div class="grid ${displayCableNum ? 'grid-cols-4' : 'grid-cols-3'} gap-3 min-h-[120px]">
-                ${displayCableNum ? `<div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">CABO</span><span class="text-2xl font-black text-brand dark:text-white">${displayCableNum}</span></div>` : ''}
+                ${displayCableNum ? `<div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center animate-fadeIn"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">CABO</span><span class="text-2xl font-black text-brand dark:text-white">${displayCableNum}</span></div>` : ''}
                 <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">LUG</span><span class="text-sm font-black text-brand dark:text-white">${displayLug}</span></div>
                 <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col items-center justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">SÍMBOLO</span><div class="text-[#22c55e]">${lugSymbolSVG}</div></div>
                 <div class="p-3 rounded-lg border bg-slate-50 dark:bg-brand-darker border-zinc-200 dark:border-brand-light text-center flex flex-col justify-center"><span class="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block mb-2">Material</span><span class="text-xs font-black text-brand dark:text-white">${state.trayEnv === 'Indoor' ? 'Cobre Estanhado' : 'Aço Inox'}</span></div>
@@ -1497,19 +1525,45 @@
 
     function getEarthingBoxSymbol(id) {
       const strokeColor = state.darkMode ? '#e4e4e7' : '#18181b';
-      if (id === 'E22²' || id === 'E96 (4)') return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto" fill="none" stroke="${strokeColor}"><rect x="10" y="10" width="60" height="20" stroke-width="2" /><line x1="10" y1="10" x2="70" y2="30" stroke-width="2" /><line x1="10" y1="30" x2="70" y2="10" stroke-width="2" /></svg>`;
-      if (id === 'E45') return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto" fill="none" stroke="${strokeColor}"><rect x="20" y="5" width="40" height="30" stroke-width="2" rx="2" /><circle cx="40" cy="20" r="6" fill="#10b981" /></svg>`;
-      return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto"></svg>`;
+      let content = '';
+
+      if (id === 'E22²' || id.startsWith('E96')) {
+        content = `<rect x="10" y="10" width="60" height="20" stroke-width="2" /><line x1="10" y1="10" x2="70" y2="30" stroke-width="2" /><line x1="10" y1="30" x2="70" y2="10" stroke-width="2" />`;
+      } else if (id === 'E23³') {
+        content = `<rect x="10" y="10" width="60" height="20" stroke-width="2" /><line x1="10" y1="10" x2="70" y2="30" stroke-width="2" /><line x1="10" y1="30" x2="70" y2="10" stroke-width="2" /><polygon points="10,10 40,20 10,30" fill="${strokeColor}" />`;
+      } else if (id === 'E15') {
+        content = `<circle cx="40" cy="20" r="10" stroke-width="2" /><circle cx="40" cy="20" r="4" stroke-width="2" />`;
+      } else if (id === 'E32') {
+        content = `<rect x="15" y="10" width="50" height="10" stroke-width="2" /><polyline points="25,20 25,28 30,28" stroke-width="1.5" /><polyline points="55,20 55,28 50,28" stroke-width="1.5" />`;
+      } else if (id === 'E30') {
+        content = `<rect x="30" y="5" width="20" height="30" stroke-width="2" /><circle cx="40" cy="28" r="2" stroke-width="1.5" />`;
+      } else if (id === 'E31 ( 4 furos)') {
+        content = `<rect x="10" y="12" width="60" height="16" stroke-width="2" /><circle cx="20" cy="20" r="2" stroke-width="1.5" /><circle cx="33" cy="20" r="2" stroke-width="1.5" /><circle cx="47" cy="20" r="2" stroke-width="1.5" /><circle cx="60" cy="20" r="2" stroke-width="1.5" />`;
+      } else if (id === 'E31 ( 2 furos)') {
+        content = `<rect x="30" y="5" width="20" height="30" stroke-width="2" /><circle cx="40" cy="13" r="2" stroke-width="1.5" /><circle cx="40" cy="27" r="2" stroke-width="1.5" />`;
+      } else if (id === 'E38') {
+        content = `
+          <rect x="14" y="14" width="12" height="12" stroke-width="1.5" />
+          <line x1="14" y1="14" x2="26" y2="26" stroke-width="1.5" />
+          <line x1="14" y1="26" x2="26" y2="14" stroke-width="1.5" />
+          <rect x="54" y="14" width="12" height="12" stroke-width="1.5" />
+          <line x1="54" y1="14" x2="66" y2="26" stroke-width="1.5" />
+          <line x1="54" y1="26" x2="66" y2="14" stroke-width="1.5" />
+          <polyline points="26,20 34,20 34,10 46,10 46,20 54,20" stroke-width="1.5" stroke-linejoin="round" />
+        `;
+      }
+
+      return `<svg viewBox="0 0 80 40" class="w-16 h-8 mx-auto" fill="none" stroke="${strokeColor}">${content}</svg>`;
     }
 
     function renderEarthingBoxesTable() {
       document.getElementById('earthing-boxes-tbody').innerHTML = EARTHING_BOXES.map(box => `
         <tr class="bg-white dark:bg-brand hover:bg-slate-50 dark:hover:bg-brand-light/20 transition-colors">
-          <td class="p-3 border border-zinc-200 dark:border-brand-light font-black text-brand dark:text-white">${box.id}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light font-black text-brand dark:text-white leading-tight">${box.displayName || box.id}</td>
           <td class="p-3 border border-zinc-200 dark:border-brand-light">${getEarthingBoxSymbol(box.id)}</td>
           <td class="p-3 border border-zinc-200 dark:border-brand-light text-center">${box.page}</td>
           <td class="p-3 border border-zinc-200 dark:border-brand-light font-semibold">${box.dwg}</td>
-          <td class="p-3 border border-zinc-200 dark:border-brand-light font-medium text-[10px] uppercase">${box.desc}</td>
+          <td class="p-3 border border-zinc-200 dark:border-brand-light font-medium text-[10px] uppercase max-w-[280px] break-words">${box.desc}</td>
         </tr>
       `).join('');
     }
@@ -1878,7 +1932,7 @@
               <div class="p-4 rounded-xl border border-zinc-200 dark:border-brand-light bg-slate-50/50 dark:bg-brand-darker/50 space-y-2">
                 <span class="text-xs font-black text-rose-500 uppercase tracking-wider block">✘ O que Nunca se Hachura?</span>
                 <p class="text-[11px] text-zinc-500 leading-relaxed uppercase">
-                  Elementos metálicos maciços cortados longitudinalmente <span class="text-rose-600 dark:text-rose-400 font-bold">NÃO SOFREM HACHURA</span>. Isso inclui: eixos, pinos de terra, chavetas, parafusos, rebites, arruelas, dentes de engrenagem, porcas e nervuras estruturais de reforço. Hachurá-los induz ao erro de considerá-los vazados/ocos.
+                  Elements metálicos maciços cortados longitudinalmente <span class="text-rose-600 dark:text-rose-400 font-bold">NÃO SOFREM HACHURA</span>. Isso inclui: eixos, pinos de terra, chavetas, parafusos, rebites, arruelas, dentes de engrenagem, porcas e nervuras estruturais de reforço. Hachurá-los induz ao erro de considerá-los vazados/ocos.
                 </p>
               </div>
 
