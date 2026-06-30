@@ -1283,7 +1283,7 @@
           displayLug = "E 55";
           extraAlertHtml = `
             <div class="my-4 p-4 rounded-xl border border-pink-400 bg-pink-50 dark:bg-[#2d1123] dark:border-[#732555] text-left space-y-2 animate-fadeIn shadow-sm">
-              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-pink-700 dark:text-pink-400">▲ JUMPER COMUM (PADRÃO)</div>
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-pink-700 dark:text-pink-400">▲ ATERRAMENTO PADRÃO E JUMPER</div>
               <div class="text-xs font-bold text-pink-800 dark:text-pink-200 leading-relaxed uppercase">
                 TÍPICO ATUALIZADO: <span class="bg-pink-200 dark:bg-pink-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span>
               </div>
@@ -1294,7 +1294,7 @@
           displayLug = "E 55";
           extraAlertHtml = `
             <div class="my-4 p-4 rounded-xl border border-green-500 bg-green-50 dark:bg-[#122e1b] dark:border-[#236b3b] text-left space-y-2 animate-fadeIn shadow-sm">
-              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-green-700 dark:text-green-400">▲ JUMPER DE DERIVAÇÃO (CP)</div>
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-green-700 dark:text-green-400">▲ JUMPER DE DERIVAÇÃO</div>
               <div class="text-xs font-bold text-green-800 dark:text-green-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-green-200 dark:bg-green-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
             </div>
           `;
@@ -1303,19 +1303,19 @@
           displayLug = "E 55";
           extraAlertHtml = `
             <div class="my-4 p-4 rounded-xl border border-blue-500 bg-blue-50 dark:bg-[#12223a] dark:border-[#234d6b] text-left space-y-2 animate-fadeIn shadow-sm">
-              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-700 dark:text-blue-400">▲ MAIN PARALLEL WIRE JUMPER</div>
-              <div class="text-xs font-bold text-blue-800 dark:text-blue-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-green-200 dark:bg-green-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
+              <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-700 dark:text-blue-400">▲ MAIN ELECTRICAL</div>
+              <div class="text-xs font-bold text-blue-800 dark:text-blue-200 leading-relaxed uppercase">TÍPICO SELECIONADO: <span class="bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span></div>
             </div>
           `;
         }
       } else if (state.traySpecial === 'main_tray') {
-        displayTypical = "E 55-D1"; 
+        displayTypical = "E 55-D5"; 
         displayLug = "E 55";
         extraAlertHtml = `
-          <div class="my-4 p-4 rounded-xl border border-blue-400 bg-blue-50 dark:bg-blue-900/40 dark:border-blue-700 text-left space-y-2 animate-fadeIn">
-            <div class="flex items-center gap-1.5 text-xs font-black uppercase text-blue-800 dark:text-blue-300">▲ CONFIGURAÇÃO: MAIN CABLE TRAY</div>
-            <div class="text-xs font-bold text-blue-700 dark:text-blue-300 leading-relaxed uppercase">
-              Mapeado com Sucesso para: <span class="bg-blue-200 dark:bg-blue-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span>
+          <div class="my-4 p-4 rounded-xl border border-yellow-400 bg-yellow-50 dark:bg-yellow-900/40 dark:border-yellow-700 text-left space-y-2 animate-fadeIn">
+            <div class="flex items-center gap-1.5 text-xs font-black uppercase text-yellow-800 dark:text-yellow-300">▲ CONFIGURAÇÃO: MAIN ELECTRICAL</div>
+            <div class="text-xs font-bold text-yellow-700 dark:text-yellow-300 leading-relaxed uppercase">
+              Mapeado com Sucesso para: <span class="bg-yellow-200 dark:bg-yellow-800 px-1.5 py-0.5 rounded text-brand dark:text-white font-black">${displayTypical}</span>
             </div>
           </div>
         `;
@@ -1399,7 +1399,7 @@
                 
                 <div class="flex flex-wrap gap-2 mb-3">
                   <button onclick="setTraySpecial('none')" class="flex-1 min-w-[80px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'none' ? 'bg-zinc-800 dark:bg-zinc-200 text-white dark:text-brand border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Padrão</button>
-                  <button onclick="setTraySpecial('main_tray')" class="flex-1 min-w-[100px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'main_tray' ? 'bg-yellow-500 text-white border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Main Cable</button>
+                  <button onclick="setTraySpecial('main_tray')" class="flex-1 min-w-[100px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'main_tray' ? 'bg-yellow-500 text-white border-transparent shadow-md' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">Main Electrical</button>
                   <button onclick="setTraySpecial('jumper')" class="flex-1 min-w-[80px] py-2.5 px-2 rounded-lg text-[10px] font-bold transition-all border ${state.traySpecial === 'jumper' ? 'bg-green-500 text-white border-green-600 shadow-lg scale-[1.02]' : 'bg-slate-50 dark:bg-brand-darker text-zinc-500 dark:text-zinc-400 border-zinc-200 dark:border-brand-light hover:bg-zinc-100'}">JUMPER</button>
                 </div>
                 
@@ -1412,9 +1412,9 @@
                   <div class="p-4 bg-green-50 dark:bg-[#122e1b] border-2 border-green-300 dark:border-green-800 rounded-xl space-y-3 animate-fadeIn mt-4 shadow-inner">
                     <div class="flex items-center gap-2 mb-2 text-green-800 dark:text-green-400 font-black uppercase text-xs">Selecione o tipo de Jumper</div>
                     <div class="grid grid-cols-3 gap-2">
-                      <button onclick="setTrayJumperType('comum')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'comum' ? 'bg-pink-500 text-white border-pink-600 shadow-md' : 'bg-white dark:bg-brand-darker text-pink-600 dark:text-pink-400 border-pink-300 dark:border-pink-800'}">COMUM</button>
+                      <button onclick="setTrayJumperType('comum')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'comum' ? 'bg-pink-500 text-white border-pink-600 shadow-md' : 'bg-white dark:bg-brand-darker text-pink-600 dark:text-pink-400 border-pink-300 dark:border-pink-800'}">PADRÃO E JUMPER</button>
                       <button onclick="setTrayJumperType('derivacao')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'derivacao' ? 'bg-green-500 text-white border-green-600 shadow-md' : 'bg-white dark:bg-brand-darker text-green-600 dark:text-green-400 border-green-300 dark:border-green-800'}">DERIVAÇÃO</button>
-                      <button onclick="setTrayJumperType('parallel')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'parallel' ? 'bg-blue-500 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-brand-darker text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-800'}">PARALLEL</button>
+                      <button onclick="setTrayJumperType('parallel')" class="py-2 px-1 rounded text-[10px] font-black uppercase transition-all border-2 ${state.trayJumperType === 'parallel' ? 'bg-blue-500 text-white border-blue-600 shadow-md' : 'bg-white dark:bg-brand-darker text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-800'}">MAIN ELECTRICAL</button>
                     </div>
                   </div>
                 ` : ''}
